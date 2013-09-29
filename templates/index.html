@@ -1,0 +1,46 @@
+{% include 'header.html' %}
+
+<div class="container">
+	{% if login_failed %}
+		{% include 'alerts/login_failed.html' %}
+	{% endif %}
+	
+	<div class="hero-unit">
+		<h1>Velkommen til jule&oslash;lsmakingen 2013!</h1>
+		<p>
+			Vi skal i dag g&aring; gjennom X antall &oslash;ltyper.
+		</p>
+	</div>
+	
+	<div class="span9">
+		<h3>Beers</h3>
+		<table class="table table-striped" data-provides="rowlink">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Style</th>
+					<th>Price</th>
+					<th>Alcohol</th>
+					<th>IBU</th>
+				</tr>
+			</thead>
+			<tbody>
+
+				{% for beer in beers %}
+				<tr>
+					<td><a href="#"></a>#{{ beer.id }}</td>
+					<td><a href="#"></a>{{ beer.brewery.name }}</td>
+					<td><a href="#"></a>{{ beer.style }}</td>
+					<td><a href="#"></a>{{ beer.price }}</td>
+					<td><a href="#"></a>{{ beer.alcohol }}</td>
+					<td><a href="#"></a>{{ beer.ibu }}</td>
+				</tr>
+				{% endfor %}
+				
+			</tbody>
+		</table>
+	</div>
+
+	{% include 'bottom.html' %}
+

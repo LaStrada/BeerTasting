@@ -1,0 +1,3 @@
+BeerTasting/settings_secret.py
+BeerTasting/static/
+db.sqlite3

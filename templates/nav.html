@@ -1,0 +1,41 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="brand" href="{% url 'index' %}">Beerminator</a>
+			<div class="nav-collapse collapse">
+				<ul class="nav">
+
+					<li>
+						<a href="{% url 'index' %}">Home</a>
+					</li>
+				</ul>
+				{% if user.is_authenticated %}
+					<div class="nav-collapse collapse pull-right">
+					<ul class="nav">
+						<li>
+							<a href="{% url 'profile_view' %}">Profile</a>
+						</li>
+						<li>
+							<a href="{% url 'logout_view' %}">Logout</a>
+						</li>
+					</ul>
+				</div>
+				{% else %}
+				<form class="navbar-form pull-right" action="{% url 'login_view' %}" method="post">
+					{% csrf_token %}
+					<input class="span2" type="text" placeholder="Username" name="username">
+					<input class="span2" type="password" placeholder="Password" name="password">
+					<button type="submit" class="btn">
+						Sign in
+					</button>
+				</form>
+				{% endif %}
+			</div><!--/.nav-collapse -->
+		</div>
+	</div>
+</div>
