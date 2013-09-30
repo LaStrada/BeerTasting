@@ -1,46 +1,39 @@
-{% include 'header.html' %}
+{% extends "base.html" %}
 
-<div class="container">
+{% block content %}
 	{% if login_failed %}
 		{% include 'alerts/login_failed.html' %}
 	{% endif %}
-	
-	<div class="hero-unit">
-		<h1>Velkommen til jule&oslash;lsmakingen 2013!</h1>
-		<p>
-			Vi skal i dag g&aring; gjennom X antall &oslash;ltyper.
-		</p>
-	</div>
-	
-	<div class="span9">
-		<h3>Beers</h3>
-		<table class="table table-striped" data-provides="rowlink">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Name</th>
-					<th>Style</th>
-					<th>Price</th>
-					<th>Alcohol</th>
-					<th>IBU</th>
-				</tr>
-			</thead>
-			<tbody>
+			<div class="row">
+				<div class=".col-lg-12">
+					<h2>Beers</h2>
+					<table class="table table-striped">
+						<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>Brewery</th>
+							<th>Style</th>
+							<th>Ibu</th>
+							<th>Alcohol</th>
+							<th>Price</th>
+							<th>Your rating</th>
+						</tr>
+						{% if beers %}
+						{% for beer in beers %}
+						<tr>
+							<td>{{ beer.pk }}</td>
+							<td>{{ beer.name }}</td>
+							<td>{{ beer.brewery }}</td>
+							<td>{{ beer.style }}</td>
+							<td>{{ beer.ibu }}</td>
+							<td>{{ beer.alcohol }}</td>
+							<td>{{ beer.price }}</td>
+							<td>{{ beer.rating }}</td>
+						</tr>
+						{% endfor %}
+						{% endif %}
+					</table>
+				</div>
+			</div>
 
-				{% for beer in beers %}
-				<tr>
-					<td><a href="#"></a>#{{ beer.id }}</td>
-					<td><a href="#"></a>{{ beer.brewery.name }}</td>
-					<td><a href="#"></a>{{ beer.style }}</td>
-					<td><a href="#"></a>{{ beer.price }}</td>
-					<td><a href="#"></a>{{ beer.alcohol }}</td>
-					<td><a href="#"></a>{{ beer.ibu }}</td>
-				</tr>
-				{% endfor %}
-				
-			</tbody>
-		</table>
-	</div>
-
-	{% include 'bottom.html' %}
-
+	{% endblock %}

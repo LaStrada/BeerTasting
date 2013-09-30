@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, render_to_response
 from django.http import Http404, HttpResponseRedirect
 
 from Beers.models import Beer
+from django.core.context_processors import csrf
 
 def index(request):
     beers = Beer.objects.all()
@@ -21,9 +22,13 @@ def stats(request):
 
 
 def login_view(request):
+    c = {}
+    c.update(csrf(request))
+    
     username = request.POST['username']
     password = request.POST['password']
     user = authenticate(username=username, password=password)
+    
     if user is not None:
         if user.is_active:
             login(request, user)
