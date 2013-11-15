@@ -33,11 +33,10 @@
 							<td>{{ beer.price }}</td>
 							{% if user.is_authenticated %}
 							<td>
-								{{ beer.rating.rating }}
-								{% if beer.rating > 0 %}
-									<span class="glyphicon glyphicon-star"></span>
+								{% if beer.rating %}
+									{% print_stars beer.rating %}
 								{% else %}
-									<span class="glyphicon glyphicon-star-empty"></span>
+									N/A
 								{% endif %}
 							</td>
 							{% endif %}
