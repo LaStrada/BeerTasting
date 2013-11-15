@@ -16,4 +16,6 @@ urlpatterns = patterns('',
     url(r'^login_failed/$', 'Beers.views.login_failed_view', name='login_failed_view'),
     url(r'^logout/', 'Beers.views.logout_view', name='logout_view'),
     url(r'^profile/$', 'Beers.views.profile_view', name='profile_view'),
+    url(r'^beer/$', 'Beers.views.selected_beer', name='selected_beer'),
+    url(r'^beer/(\d+)$', 'Beers.views.selected_beer', name='selected_beer'),
 )

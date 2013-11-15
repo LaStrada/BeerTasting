@@ -7,7 +7,7 @@
 			<div class="row">
 				<div class=".col-lg-12">
 					<h2>Beers</h2>
-					<table class="table table-striped">
+					<table class="table table-striped" data-provides="rowlink">
 						<tr>
 							<th>#</th>
 							<th>Name</th>
@@ -16,19 +16,31 @@
 							<th>Ibu</th>
 							<th>Alcohol</th>
 							<th>Price</th>
+							{% if user.is_authenticated %}
 							<th>Your rating</th>
+							{% endif %}
 						</tr>
 						{% if beers %}
 						{% for beer in beers %}
-						<tr>
-							<td>{{ beer.pk }}</td>
+						
+						<tr {% if not beer.rating %} class="warning"{% endif %}>
+							<td><a href="{% url 'selected_beer' %}{{ beer.pk }}">{{ beer.pk }}</a></td>
 							<td>{{ beer.name }}</td>
 							<td>{{ beer.brewery }}</td>
 							<td>{{ beer.style }}</td>
 							<td>{{ beer.ibu }}</td>
 							<td>{{ beer.alcohol }}</td>
 							<td>{{ beer.price }}</td>
-							<td>{{ beer.rating }}</td>
+							{% if user.is_authenticated %}
+							<td>
+								{{ beer.rating.rating }}
+								{% if beer.rating > 0 %}
+									<span class="glyphicon glyphicon-star"></span>
+								{% else %}
+									<span class="glyphicon glyphicon-star-empty"></span>
+								{% endif %}
+							</td>
+							{% endif %}
 						</tr>
 						{% endfor %}
 						{% endif %}
