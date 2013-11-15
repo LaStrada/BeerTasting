@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load beertasting_extra %}
+
+{% block content %}
+			<div class="row">
+				<div class=".col-lg-12">
+					{% for b in beers %}
+					<h2>Beer #{{ b_id }}</h2>
+					
+					{% if errors %}
+						{{ errors }}
+					{% endif %}
+					
+					<form action="" method="post">
+						{% csrf_token %}
+						{% autoescape off %}
+							{{ b.rating|print_stars_form }}
+						{% endautoescape %}
+						<textarea name="comment" maxlength="500" rows="5" cols="40">{% if b.comment %}{{ b.comment }}{% endif %}</textarea>
+						<br />
+						<input type="submit" value="Rate"></input>
+					</form>
+					{% endfor %}
+				</div>
+			</div>
+
+{% endblock %}

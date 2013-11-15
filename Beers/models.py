@@ -12,6 +12,7 @@ def validate_only_one_instance(obj):
 class Setup(models.Model):
     name = models.CharField(max_length=50)
     intro = models.TextField()
+    finished = models.BooleanField()
     
     def __unicode__(self):
         return self.name

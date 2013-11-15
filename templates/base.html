@@ -11,6 +11,7 @@
 
 		<!-- Bootstrap core CSS -->
 		<link href="{{ STATIC_URL }}bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+		<link href="{{ STATIC_URL }}form.css" rel="stylesheet">
 
 		<!-- Custom styles for this template -->
 		<link href="{{ STATIC_URL }}jumbotron.css" rel="stylesheet">
@@ -43,7 +44,7 @@
 							<a href="{% url 'index' %}">Home</a>
 						</li>
 						<li>
-							<a href="#">Statistics</a>
+							<a href="{% url 'stats' %}">Statistics</a>
 						</li>
 					</ul>
 					
@@ -111,5 +112,7 @@
 		
 		<!-- Row link -->
 		<script src="{{ STATIC_URL }}bootstrap-rowlink.min.js"></script>
+		
+		<script src="{{ STATIC_URL }}form.js"></script>
 	</body>
 </html>
