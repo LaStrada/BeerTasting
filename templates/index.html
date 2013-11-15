@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load beertasting_extra %}
+
 {% block content %}
 	{% if login_failed %}
 		{% include 'alerts/login_failed.html' %}
@@ -7,8 +9,8 @@
 			<div class="row">
 				<div class=".col-lg-12">
 					<h2>Beers</h2>
-					<table class="table table-striped" data-provides="rowlink">
-						<tr>
+					<table class="table">
+						<tr class="border">
 							<th>#</th>
 							<th>Name</th>
 							<th>Brewery</th>
@@ -16,31 +18,34 @@
 							<th>Ibu</th>
 							<th>Alcohol</th>
 							<th>Price</th>
-							{% if user.is_authenticated %}
-							<th>Your rating</th>
-							{% endif %}
 						</tr>
 						{% if beers %}
 						{% for beer in beers %}
 						
-						<tr {% if not beer.rating %} class="warning"{% endif %}>
-							<td><a href="{% url 'selected_beer' %}{{ beer.pk }}">{{ beer.pk }}</a></td>
+						<tr>
+							<td {% if user.is_authenticated %} rowspan="2"{% endif %}>
+								{{forloop.counter}}
+							</td>
 							<td>{{ beer.name }}</td>
 							<td>{{ beer.brewery }}</td>
 							<td>{{ beer.style }}</td>
 							<td>{{ beer.ibu }}</td>
 							<td>{{ beer.alcohol }}</td>
 							<td>{{ beer.price }}</td>
-							{% if user.is_authenticated %}
-							<td>
-								{% if beer.rating %}
-									{% print_stars beer.rating %}
-								{% else %}
-									N/A
-								{% endif %}
-							</td>
-							{% endif %}
 						</tr>
+						{% if user.is_authenticated %}
+						<tr>
+							<td colspan="6">
+								{% autoescape off %}
+									{{ beer.rating|print_stars }}
+									{% if finished == False %}
+										<br />
+										{{ beer.rating|print_stars }}
+									{% endif %}
+								{% endautoescape %}
+							</td>
+						</tr>
+						{% endif %}{# user auth #}
 						{% endfor %}
 						{% endif %}
 					</table>

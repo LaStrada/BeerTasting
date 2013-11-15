@@ -7,11 +7,13 @@ from django.db import connection
 
 from Beers.models import Beer
 from django.core.context_processors import csrf
+from django.http import HttpResponse
+from django.template import RequestContext, loader
 
 def index(request):
     #beers = Beer.objects.all()
     beers = Beer.objects.raw('SELECT * FROM Beers_beer LEFT JOIN Beers_beerrating ON Beers_beer.id=Beers_beerrating.beer_id')
-    return render(request, 'index.html', {'beers':beers, 'login_failed':False})
+    return render(request, 'index.html', {'beers':beers, 'login_failed':False, 'Finished':True})
 
 
 def selected_beer(request):

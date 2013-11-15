@@ -30,6 +30,11 @@ TEMPLATE_DIRS = (
                  'BeerTasting/templates'
 )
 
+TEMPLATE_LOADERS = (
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader'
+)
+
 ALLOWED_HOSTS = []
 
 
@@ -43,6 +48,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Beers',
+    'BeerTasting',
 )
 
 MIDDLEWARE_CLASSES = (
