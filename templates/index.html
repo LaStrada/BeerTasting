@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load beertasting_extra %}
+
 {% block content %}
 	{% if login_failed %}
 		{% include 'alerts/login_failed.html' %}
@@ -7,28 +9,25 @@
 			<div class="row">
 				<div class=".col-lg-12">
 					<h2>Beers</h2>
-					<table class="table table-striped">
-						<tr>
+					<table class="table" data-provides="rowlink">
+						<tr class="border">
 							<th>#</th>
-							<th>Name</th>
-							<th>Brewery</th>
-							<th>Style</th>
-							<th>Ibu</th>
-							<th>Alcohol</th>
-							<th>Price</th>
-							<th>Your rating</th>
+							<th>Rating</th>
 						</tr>
 						{% if beers %}
 						{% for beer in beers %}
+						
 						<tr>
-							<td>{{ beer.pk }}</td>
-							<td>{{ beer.name }}</td>
-							<td>{{ beer.brewery }}</td>
-							<td>{{ beer.style }}</td>
-							<td>{{ beer.ibu }}</td>
-							<td>{{ beer.alcohol }}</td>
-							<td>{{ beer.price }}</td>
-							<td>{{ beer.rating }}</td>
+							<td>
+								<a href="{% url 'rate_beer' forloop.counter %}">
+								{{beer.id}}
+								</a>
+							</td>
+							<td>
+								{% autoescape off %}
+									{{ ratings|print_stars:beer.id }}
+								{% endautoescape %}
+							</td>
 						</tr>
 						{% endfor %}
 						{% endif %}

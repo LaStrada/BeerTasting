@@ -3,6 +3,23 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db.models import Avg
 
+def validate_only_one_instance(obj):
+    model = obj.__class__
+    if (model.objects.count() > 0 and
+        obj.id != model.objects.get().id):
+        raise ValidationError("Can only create 1 %s instance" % model.__name__)
+    
+class Setup(models.Model):
+    name = models.CharField(max_length=50)
+    intro = models.TextField()
+    finished = models.BooleanField()
+    
+    def __unicode__(self):
+        return self.name
+    
+    def clean(self):
+        validate_only_one_instance(self)
+
 
 class Brewery(models.Model):
     name = models.CharField(max_length=50)
@@ -30,7 +47,7 @@ class Beer(models.Model):
         rating = BeerRating.objects.filter(beer=self.pk).aggregate(Avg('rating'))
     
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
 def validate_rating(value):
@@ -39,9 +56,9 @@ def validate_rating(value):
 
 class BeerRating(models.Model):
     user = models.ForeignKey(User)
-    beer = models.ForeignKey(Beer)
+    beer = models.ForeignKey(Beer, related_name='ratings')
     rating = models.IntegerField(validators=[validate_rating])
-    comment = models.CharField(max_length=500)
+    comment = models.CharField(max_length=500, blank=True)
     
     def __unicode__(self):
-        return self.rating
+        return unicode("%d" % (self.rating))
