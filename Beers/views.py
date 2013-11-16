@@ -27,7 +27,10 @@ def stats(request):
     #beers = Beer.objects.raw('SELECT * FROM Beers_beer LEFT JOIN Beers_beerrating ON Beers_beer.id=Beers_beerrating.beer_id')
     
     beers = Beer.objects.all()
-    ratings = BeerRating.objects.annotate(Avg('rating'))
+    ratings = BeerRating.objects.raw('''SELECT id, beer_id, ROUND(AVG(rating)) AS rating
+                                        FROM Beers_beerrating
+                                        GROUP BY beer_id
+                                        ''')
     
     if(setup.finished == True):
         return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})

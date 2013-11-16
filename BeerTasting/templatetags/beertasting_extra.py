@@ -16,7 +16,7 @@ def print_stars(ratings, b_id):
     
     try:
         for r in ratings:
-            if b_id == r.beer_id:
+            if int(b_id) == int(r.beer.id):
                 rating = int(abs(r.rating))
                 comment = r.comment
                 break
