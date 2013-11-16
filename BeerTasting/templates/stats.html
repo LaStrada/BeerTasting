@@ -33,7 +33,6 @@
 							<td>{{ beer.alcohol }}</td>
 							<td>{{ beer.price }}</td>
 						</tr>
-						{% if user.is_authenticated %}
 						<tr>
 							<td colspan="6" class="{{ forloop.counter|every_other_row }}">
 								{% autoescape off %}
@@ -41,7 +40,6 @@
 								{% endautoescape %}
 							</td>
 						</tr>
-						{% endif %}{# user auth #}
 						{% endfor %}
 						{% endif %}
 					</table>
