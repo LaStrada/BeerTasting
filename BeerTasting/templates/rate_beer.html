@@ -16,7 +16,7 @@
 						{% autoescape off %}
 							{{ beer.rating|print_stars_form }}
 						{% endautoescape %}
-						<textarea name="comment" maxlength="500" rows="5" cols="40">{% if beer.comment %}{{ beer.comment }}{% endif %}</textarea>
+						<textarea name="comment" maxlength="500" rows="5" style="width:90%">{% if beer.comment %}{{ beer.comment }}{% endif %}</textarea>
 						<br />
 						<input type="submit" value="Rate"></input>
 					</form>
