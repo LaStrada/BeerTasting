@@ -20,12 +20,12 @@
 						<tr>
 							<td>
 								<a href="{% url 'rate_beer' forloop.counter %}">
-								{{forloop.counter}}
+								{{beer.id}}
 								</a>
 							</td>
 							<td>
 								{% autoescape off %}
-									{{ beer.rating|print_stars }}
+									{{ ratings|print_stars:beer.id }}
 								{% endautoescape %}
 							</td>
 						</tr>
