@@ -25,7 +25,7 @@
 							</td>
 							<td>
 								{% autoescape off %}
-									{{ ratings|print_stars:beer.id }}
+									{{ ratings|print_stars_with_comments:beer.id }}
 								{% endautoescape %}
 							</td>
 						</tr>

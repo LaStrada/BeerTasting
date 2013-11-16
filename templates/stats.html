@@ -22,9 +22,9 @@
 						{% if beers %}
 						{% for beer in beers %}
 						
-						<tr>
-							<td {% if user.is_authenticated %} rowspan="2"{% endif %}>
-								{{forloop.counter}}
+						<tr class="{{ forloop.counter|every_other_row }}">
+							<td rowspan="2">
+								{{ beer.id }}
 							</td>
 							<td>{{ beer.name }}</td>
 							<td>{{ beer.brewery }}</td>
@@ -35,13 +35,9 @@
 						</tr>
 						{% if user.is_authenticated %}
 						<tr>
-							<td colspan="6">
+							<td colspan="6" class="{{ forloop.counter|every_other_row }}">
 								{% autoescape off %}
-									{{ beer.rating|print_stars }}
-									{% if finished %}
-										<br />
-										{{ beer.rating|print_stars }}
-									{% endif %}
+									{{ ratings|print_stars:beer.id }}
 								{% endautoescape %}
 							</td>
 						</tr>

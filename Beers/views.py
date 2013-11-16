@@ -2,14 +2,13 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate
 from django.contrib.auth.views import login, logout
 from django.shortcuts import render, redirect, render_to_response
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.db import connection
 
-from Beers.models import Beer, BeerRating
+from Beers.models import Beer, BeerRating, Setup
 from django.core.context_processors import csrf
-from django.http import HttpResponse
 from django.template import RequestContext, loader
-from django.db.models import Count
+from django.db.models import Count, Avg
 
 def index(request):
     beers = Beer.objects.all()
@@ -24,9 +23,16 @@ def index(request):
 
 
 def stats(request):
-    beers = Beer.objects.raw('SELECT * FROM Beers_beer LEFT JOIN Beers_beerrating ON Beers_beer.id=Beers_beerrating.beer_id')
+    setup = Setup.objects.get()
+    #beers = Beer.objects.raw('SELECT * FROM Beers_beer LEFT JOIN Beers_beerrating ON Beers_beer.id=Beers_beerrating.beer_id')
     
-    return render(request, 'index.html', {'beers':beers, 'login_failed':False, 'finished':True})
+    beers = Beer.objects.all()
+    ratings = BeerRating.objects.annotate(Avg('rating'))
+    
+    if(setup.finished == True):
+        return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
+    else:
+        return HttpResponseRedirect(reverse('index'))
 
 
 def rate_beer(request, beer_id):
@@ -73,7 +79,7 @@ def rate_beer(request, beer_id):
     try:
         beer = BeerRating.objects.get(user=request.user.id, beer=b_id)
     except:
-        raise Http404
+        beer = ''
     
     return render(request, 'rate_beer.html', {'beer':beer, 'b_id':b_id, 'errors':errors})
 

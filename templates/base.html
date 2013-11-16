@@ -1,3 +1,5 @@
+{% load beertasting_extra %}
+
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -7,7 +9,7 @@
 		<meta name="author" content="">
 		<link rel="shortcut icon" href="{{ STATIC_URL }}bootstrap/assets/ico/favicon.png">
 
-		<title>BeerTasting</title>
+		<title>{% block title %}BeerTasting{% endblock %}</title>
 
 		<!-- Bootstrap core CSS -->
 		<link href="{{ STATIC_URL }}bootstrap/dist/css/bootstrap.css" rel="stylesheet">
@@ -36,7 +38,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="{% url 'index' %}">{{ get_site_name }}</a>
+					<a class="navbar-brand" href="{% url 'index' %}">{% block title_main %}BeerTasting{% endblock %}</a>
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">

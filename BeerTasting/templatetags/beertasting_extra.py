@@ -3,6 +3,12 @@ from Beers.models import Setup
 
 register = template.Library()
 
+@register.filter(name="every_other_row")
+def every_other_row(row):
+    if row % 2:
+        return 'active'
+    return
+
 @register.filter(name="print_stars")
 def print_stars(ratings, b_id):
     rating = 0
@@ -11,8 +17,9 @@ def print_stars(ratings, b_id):
     try:
         for r in ratings:
             if b_id == r.beer_id:
-                rating = int(r.rating)
+                rating = int(abs(r.rating))
                 comment = r.comment
+                break
             
     except (ValueError, TypeError):
         rating = 0
@@ -26,10 +33,25 @@ def print_stars(ratings, b_id):
         else:
             string += '<span class="glyphicon glyphicon-star-empty"></span>'
     
-    if comment:
+    return string
+
+@register.filter(name="print_stars_with_comments")
+def print_stars_with_comments(ratings, b_id):
+    comment = ''
+    
+    #todo: Optimize
+    for r in ratings:
+        if b_id == r.beer_id:
+            comment = r.comment
+            break
+        
+    string = print_stars(ratings, b_id)
+    
+    if comment != '':
         string += "<br />%s" % comment
     
     return string
+
 
 @register.filter(name="print_stars_form")
 def print_stars_form(rating):
@@ -54,12 +76,7 @@ def print_stars_form(rating):
     return string
 
 
-@register.tag(name="get_site_name")
+@register.filter(name="get_site_name")
 def get_site_name():
-    site = Setup.objects.all[0]
-    return {'site': site.name}
-
-
-@register.filter(name="get_range")
-def get_range( value ):
-    return range( value )
+    site = Setup.objects.get(pk=1)
+    return site.name
