@@ -28,6 +28,7 @@ TEMPLATE_DEBUG = True
 
 TEMPLATE_DIRS = (
                  PROJECT_ROOT + '/templates',
+                 PROJECT_ROOT + '/BeerTasting/templates',
 )
 
 TEMPLATE_LOADERS = (
