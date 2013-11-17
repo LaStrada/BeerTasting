@@ -23,19 +23,22 @@ def index(request):
 
 
 def stats(request):
-    setup = Setup.objects.all()
-    #beers = Beer.objects.raw('SELECT * FROM Beers_beer LEFT JOIN Beers_beerrating ON Beers_beer.id=Beers_beerrating.beer_id')
+    try:
+        setup = Setup.objects.get(pk=1)
+        
+        beers = Beer.objects.all()
+        ratings = BeerRating.objects.raw('''SELECT id, beer_id, ROUND(AVG(rating)) AS rating
+                                            FROM Beers_beerrating
+                                            GROUP BY beer_id
+                                            ''')
     
-    beers = Beer.objects.all()
-    ratings = BeerRating.objects.raw('''SELECT id, beer_id, ROUND(AVG(rating)) AS rating
-                                        FROM Beers_beerrating
-                                        GROUP BY beer_id
-                                        ''')
-    
-    if(setup.count() == 1 and setup.finished == True):
-        return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
-    else:
+        if(setup.finished == True):
+            return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
+        else:
+            return HttpResponseRedirect(reverse('index'))
+    except:
         return HttpResponseRedirect(reverse('index'))
+    
 
 
 def rate_beer(request, beer_id):
