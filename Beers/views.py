@@ -23,7 +23,7 @@ def index(request):
 
 
 def stats(request):
-    setup = Setup.objects.get()
+    setup = Setup.objects.all()
     #beers = Beer.objects.raw('SELECT * FROM Beers_beer LEFT JOIN Beers_beerrating ON Beers_beer.id=Beers_beerrating.beer_id')
     
     beers = Beer.objects.all()
@@ -32,7 +32,7 @@ def stats(request):
                                         GROUP BY beer_id
                                         ''')
     
-    if(setup.finished == True):
+    if(setup.count() == 1 and setup.finished == True):
         return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
     else:
         return HttpResponseRedirect(reverse('index'))
@@ -49,13 +49,17 @@ def rate_beer(request, beer_id):
     except:
         raise Http404
     
+    beer = Beer.objects.filter(pk=beer_id)
+    if beer.count() != 1:
+        raise Http404
+    
     beers = BeerRating.objects.filter(user=request.user.id, beer=b_id)
     
     #Validate and store data
     if request.method == 'POST':
         #Validate
-        #todo: validate message and rating
-        if int(request.POST['star']):
+        try:
+            int(request.POST['star'])
             #Update
             if beers.count() == 1:
                 beer = BeerRating.objects.get(user=request.user.id, beer=b_id)
@@ -73,9 +77,10 @@ def rate_beer(request, beer_id):
                 
             #Too many posts
             else:
+                #TODO: Delete posts and create new
                 errors = "Too many posts..."
                 
-        else:
+        except:
             errors = "Not a valid rating value..."
     
     

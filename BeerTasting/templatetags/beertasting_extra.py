@@ -13,15 +13,12 @@ def every_other_row(row):
 def print_stars(ratings, b_id):
     string = ''
     rating = 0
-    comment = ''
     
     try:
         for r in ratings:
             if int(b_id) == int(r.beer.id):
                 rat = r.rating
-                string += "%d - " % rat
                 rating = int(abs(r.rating))
-                comment = r.comment
                 break
             
     except (ValueError, TypeError):
@@ -39,7 +36,6 @@ def print_stars(ratings, b_id):
 @register.filter(name="print_stars_with_comments")
 def print_stars_with_comments(ratings, b_id):
     comment = ''
-    string = ''
     
     #todo: Optimize
     for r in ratings:
