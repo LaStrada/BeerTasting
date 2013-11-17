@@ -61,4 +61,4 @@ class BeerRating(models.Model):
     comment = models.CharField(max_length=500, blank=True)
     
     def __unicode__(self):
-        return unicode("%d" % (self.rating))
+        return unicode("User: %s, Beer: %s, Rating: %d" % (self.user, self.beer, self.rating))

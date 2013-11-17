@@ -11,20 +11,18 @@ def every_other_row(row):
 
 @register.filter(name="print_stars")
 def print_stars(ratings, b_id):
+    string = ''
     rating = 0
-    comment = ''
     
     try:
         for r in ratings:
             if int(b_id) == int(r.beer.id):
+                rat = r.rating
                 rating = int(abs(r.rating))
-                comment = r.comment
                 break
             
     except (ValueError, TypeError):
         rating = 0
-    
-    string = ''
     
     for x in range(0,10):
         
