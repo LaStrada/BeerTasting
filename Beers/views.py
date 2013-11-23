@@ -11,15 +11,13 @@ from django.template import RequestContext, loader
 from django.db.models import Count, Avg
 
 def index(request):
-    beers = Beer.objects.all()
-#    beers = BeerRating.objects.raw('''SELECT *
-#                                FROM Beers_beer
-#                                LEFT JOIN Beers_beerrating
-#                                ON Beers_beer.id=Beers_beerrating.beer_id''')
+    if request.user.is_authenticated():
+        beers = Beer.objects.all()
+        ratings = BeerRating.objects.filter(user_id=request.user.id)
+        
+        return render(request, 'index.html', {'beers':beers, 'ratings':ratings, 'login_failed':False, 'Finished':False})
     
-    ratings = BeerRating.objects.filter(user_id=request.user.id)
-    
-    return render(request, 'index.html', {'beers':beers, 'ratings':ratings, 'login_failed':False, 'Finished':False})
+    return render(request, 'index_not_logged_in.html')
 
 
 def stats(request):
