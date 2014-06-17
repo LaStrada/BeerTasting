@@ -17,7 +17,7 @@ def index(request):
         setup = Setup.objects.get(pk=1)
         
         return render(request, 'index.html', {'beers':beers, 'ratings':ratings,
-                                              'login_failed':False, 'Finished':setup.Finished})
+                                              'Finished':setup.Finished})
     
     return render(request, 'index_not_logged_in.html')
 
