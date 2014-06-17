@@ -76,7 +76,7 @@ def print_stars_form(rating):
 
 @register.filter(name="return_with_decimal")
 def return_with_decimal(rating, decimal):
-    return round(rating, decimal)
+    return float(round(rating, decimal))
 
 
 @register.filter(name="get_site_name")
