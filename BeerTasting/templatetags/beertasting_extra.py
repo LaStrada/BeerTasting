@@ -18,7 +18,7 @@ def print_stars(ratings, b_id):
         for r in ratings:
             if int(b_id) == int(r.beer.id):
                 rat = r.rating
-                rating = int(abs(r.rating))
+                rating = int(abs(round(r.rating)))
                 break
             
     except (ValueError, TypeError):
@@ -54,7 +54,7 @@ def print_stars_with_comments(ratings, b_id):
 @register.filter(name="print_stars_form")
 def print_stars_form(rating):
     try:
-        int(rating)
+        int(round(rating))
             
     except (ValueError, TypeError):
         rating = 0
@@ -72,6 +72,11 @@ def print_stars_form(rating):
     string += '</div>'
     
     return string
+
+
+@register.filter(name="return_with_decimal")
+def return_with_decimal(rating, decimal):
+    return round(rating, decimal)
 
 
 @register.filter(name="get_site_name")

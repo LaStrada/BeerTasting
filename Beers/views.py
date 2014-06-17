@@ -26,13 +26,14 @@ def stats(request):
     try:
         setup = Setup.objects.get(pk=1)
         
-        beers = Beer.objects.all()
-        ratings = BeerRating.objects.raw('''SELECT id, beer_id, ROUND(AVG(rating)) AS rating
+        if(setup.finished == True):
+            beers = Beer.objects.all()
+            
+            ratings = BeerRating.objects.raw('''SELECT id, beer_id, AVG(rating) AS rating
                                             FROM Beers_beerrating
                                             GROUP BY beer_id
                                             ''')
-    
-        if(setup.finished == True):
+        
             return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
         else:
             return HttpResponseRedirect(reverse('index'))

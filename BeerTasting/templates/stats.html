@@ -36,7 +36,7 @@
 						<tr>
 							<td colspan="6" class="{{ forloop.counter|every_other_row }}">
 								{% autoescape off %}
-									{{ ratings|print_stars:beer.id }}
+									{{ ratings|print_stars:beer.id }} - {{ ratings|return_with_decimal:1 }}
 								{% endautoescape %}
 							</td>
 						</tr>
