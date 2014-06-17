@@ -9,6 +9,9 @@
 			<table class="table" data-provides="rowlink">
 				<tr class="border">
 					<th>#</th>
+					{% if finished %}
+					<th>Beer</th>
+					{% endif %}
 					<th>Rating</th>
 				</tr>
 				{% if beers %}
@@ -20,10 +23,12 @@
 						{{beer.id}}
 						</a>
 					</td>
+					{% if finished %}
 					<td>
 						{{beer.brewery}} - <i>{{beer.name}}</i>
 					</td>
-					<td colspan="2">
+					{% endif %}
+					<td>
 						{% autoescape off %}
 							{{ ratings|print_stars_with_comments:beer.id }}
 						{% endautoescape %}
