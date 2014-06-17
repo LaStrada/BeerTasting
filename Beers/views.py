@@ -29,7 +29,7 @@ def stats(request):
         if(setup.finished == True):
             beers = Beer.objects.all()
             
-            ratings = BeerRating.objects.raw('''SELECT id, beer_id, Cast(AVG(rating as Float)) AS rating
+            ratings = BeerRating.objects.raw('''SELECT id, beer_id, AVG(Cast(rating as Float)) AS rating
                                             FROM Beers_beerrating
                                             GROUP BY beer_id
                                             ''')
