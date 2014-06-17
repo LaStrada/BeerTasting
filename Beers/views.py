@@ -125,5 +125,4 @@ def logout_view(request):
 
 
 def login_failed_view(request):
-    beers = Beer.objects.all()
-    return render(request, 'index_not_logged_in.html', {'beers':beers, 'login_failed':True})
+    return render(request, 'index_not_logged_in.html', {'login_failed':True})
