@@ -93,6 +93,7 @@ def rate_beer(request, beer_id):
     except:
         beer = ''
     
+    #Change rate button if user has rated this beer before
     if beers.count() > 0:
         rated_before = True
     else:
