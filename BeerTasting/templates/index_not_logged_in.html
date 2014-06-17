@@ -3,15 +3,13 @@
 {% load beertasting_extra %}
 
 {% block content %}
-	{% if login_failed %}
-		{% include 'alerts/login_failed.html' %}
-	{% endif %}
-			<div class="row">
-				<div class=".col-lg-12">
-					<h2>Beers</h2>
-					
-					Log in to see the beers!
-				</div>
+	{% include 'alerts/login_failed.html' %}
+		<div class="row">
+			<div class=".col-lg-12">
+				<h2>Beers</h2>
+				
+				Log in to see the beers!
 			</div>
+		</div>
 
-	{% endblock %}
+{% endblock %}

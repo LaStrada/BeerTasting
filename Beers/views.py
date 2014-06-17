@@ -14,8 +14,10 @@ def index(request):
     if request.user.is_authenticated():
         beers = Beer.objects.all()
         ratings = BeerRating.objects.filter(user_id=request.user.id)
+        setup = Setup.objects.get(pk=1)
         
-        return render(request, 'index.html', {'beers':beers, 'ratings':ratings, 'login_failed':False, 'Finished':False})
+        return render(request, 'index.html', {'beers':beers, 'ratings':ratings,
+                                              'login_failed':False, 'Finished':setup.Finished})
     
     return render(request, 'index_not_logged_in.html')
 
@@ -125,4 +127,4 @@ def logout_view(request):
 
 
 def login_failed_view(request):
-    return render(request, 'index_not_logged_in.html', {'login_failed':True})
+    return render(request, 'index_not_logged_in.html')

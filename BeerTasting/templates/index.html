@@ -24,6 +24,9 @@
 								</a>
 							</td>
 							<td>
+								{{beer.brewery}} - <i>{{beer.name}}</i>
+							</td>
+							<td colspan="2">
 								{% autoescape off %}
 									{{ ratings|print_stars_with_comments:beer.id }}
 								{% endautoescape %}
