@@ -17,7 +17,7 @@ def index(request):
         setup = Setup.objects.get(pk=1)
         
         return render(request, 'index.html', {'beers':beers, 'ratings':ratings,
-                                              'Finished':setup.finished})
+                                              'finished':setup.finished})
     
     return render(request, 'index_not_logged_in.html')
 
@@ -57,13 +57,14 @@ def rate_beer(request, beer_id):
         raise Http404
     
     beers = BeerRating.objects.filter(user=request.user.id, beer=b_id)
+    setup = Setup.objects.get(pk=1)
     
     #Validate and store data
     if request.method == 'POST':
         #Validate
         try:
             int(request.POST['star'])
-            #Update
+            #Update and return to index
             if beers.count() == 1:
                 beer = BeerRating.objects.get(user=request.user.id, beer=b_id)
                 
@@ -72,7 +73,7 @@ def rate_beer(request, beer_id):
                 beer.save()
                 return HttpResponseRedirect(reverse('index'))
                 
-            #Insert
+            #Insert and return to index
             elif beers.count() == 0:
                 new_rating = BeerRating(user=request.user, beer_id=b_id, rating=request.POST['star'], comment=request.POST['comment'])
                 new_rating.save()
@@ -92,7 +93,13 @@ def rate_beer(request, beer_id):
     except:
         beer = ''
     
-    return render(request, 'rate_beer.html', {'beer':beer, 'b_id':b_id, 'errors':errors})
+    if beers.count() > 0:
+        rated_before = True
+    else:
+        rated_before = False
+    
+    return render(request, 'rate_beer.html', {'beer':beer, 'b_id':b_id, 'errors':errors,
+                                              'finished':setup.finished, 'rated_before':rated_before})
 
 
 def login_view(request):

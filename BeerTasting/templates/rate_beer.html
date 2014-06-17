@@ -11,6 +11,12 @@
 						{{ errors }}
 					{% endif %}
 					
+					% if finished %
+					<p>
+						{{beer.brewery}} - <i>{{beer.name}}</i>
+					</p>
+					{% endif %}
+					
 					<form action="" method="post">
 						{% csrf_token %}
 						{% autoescape off %}
@@ -18,7 +24,11 @@
 						{% endautoescape %}
 						<textarea name="comment" maxlength="500" rows="5" style="width:90%">{% if beer.comment %}{{ beer.comment }}{% endif %}</textarea>
 						<br />
+						{% if rated_before %}
 						<input type="submit" value="Rate"></input>
+						{% else %}
+						<input type="submit" value="Update rating"></input>
+						{% endif %}
 					</form>
 				</div>
 			</div>
