@@ -25,9 +25,9 @@
 						<textarea name="comment" maxlength="500" rows="5" style="width:90%">{% if beer.comment %}{{ beer.comment }}{% endif %}</textarea>
 						<br />
 						{% if rated_before %}
-						<input type="submit" value="Rate"></input>
-						{% else %}
 						<input type="submit" value="Update rating"></input>
+						{% else %}
+						<input type="submit" value="Rate"></input>
 						{% endif %}
 					</form>
 				</div>
