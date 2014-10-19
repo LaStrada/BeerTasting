@@ -21,15 +21,14 @@ def index(request):
     
     return render(request, 'index_not_logged_in.html')
 
-
 def stats(request):
-    try:
-        setup = Setup.objects.get(pk=1)
+    #try:
+        setup = Setup.objects.get(id=1)
         
         if(setup.finished == True):
             beers = Beer.objects.all()
             
-            ratings = BeerRating.objects.raw('''SELECT id, beer_id, AVG(Cast(rating as Float)) AS rating
+            ratings = BeerRating.objects.raw('''SELECT id, beer_id, ROUND(AVG(CAST(rating AS FLOAT)), 2) AS rating
                                             FROM Beers_beerrating
                                             GROUP BY beer_id
                                             ''')
@@ -37,10 +36,8 @@ def stats(request):
             return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
         else:
             return HttpResponseRedirect(reverse('index'))
-    except:
-        return HttpResponseRedirect(reverse('index'))
-    
-
+    #except:
+        #return HttpResponseRedirect(reverse('index'))
 
 def rate_beer(request, beer_id):
     errors = ''

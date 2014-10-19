@@ -75,8 +75,21 @@ def print_stars_form(rating):
 
 
 @register.filter(name="return_with_decimal")
-def return_with_decimal(rating, decimal):
-    return float(round(rating, decimal))
+def return_with_decimal(ratings, b_id):
+    try:
+        for r in ratings:
+            if int(b_id) == int(r.beer.id):
+                rat = r.rating
+                rating = int(abs(round(r.rating)))
+                break
+            
+    except (ValueError, TypeError):
+        rating = 0
+        
+    if int(rating):
+        return float(round(rating, 1))
+    else:
+        return 'N/A'
 
 
 @register.filter(name="get_site_name")
