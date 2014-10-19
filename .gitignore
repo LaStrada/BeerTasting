@@ -1,6 +1,5 @@
 BeerTasting/settings_secret.py
 db.sqlite3
-BeerTasting/static/bootstrap/*
 .pydevproject
 .project
 *.pyc
