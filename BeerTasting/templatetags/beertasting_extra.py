@@ -79,8 +79,7 @@ def return_with_decimal(ratings, b_id):
     try:
         for r in ratings:
             if int(b_id) == int(r.beer.id):
-                rat = r.rating
-                rating = int(round(r.rating))
+                rating = float(r.rating)
                 break
             
     except (ValueError, TypeError):
