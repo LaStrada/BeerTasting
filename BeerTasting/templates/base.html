@@ -1,4 +1,5 @@
 {% load beertasting_extra %}
+{% load staticfiles %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,24 +8,24 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
-		<link rel="shortcut icon" href="{{ STATIC_URL }}bootstrap/assets/ico/favicon.png">
+		<link rel="shortcut icon" href="{% static 'bootstrap/assets/ico/favicon.png' %}">
 
 		<title>{% block title %}BeerTasting{% endblock %}</title>
 
 		<!-- Bootstrap core CSS -->
-		<link href="{{ STATIC_URL }}bootstrap/dist/css/bootstrap.css" rel="stylesheet">
-		<link href="{{ STATIC_URL }}form.css" rel="stylesheet">
+		<link href="{% static 'bootstrap/dist/css/bootstrap.css' %}" rel="stylesheet">
+		<link href="{% static 'form.css' %}" rel="stylesheet">
 
 		<!-- Custom styles for this template -->
-		<link href="{{ STATIC_URL }}jumbotron.css" rel="stylesheet">
+		<link href="{% static 'jumbotron.css' %}" rel="stylesheet">
 		
 		<!-- Row link -->
-		<link href="{{ STATIC_URL }}bootstrap-rowlink.min.css" rel="stylesheet">
+		<link href="{% static 'bootstrap-rowlink.min.css' %}" rel="stylesheet">
 
 		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
-		<script src="{{ STATIC_URL }}bootstrap/assets/js/html5shiv.js"></script>
-		<script src="{{ STATIC_URL }}bootstrap/assets/js/respond.min.js"></script>
+		<script src="{% static 'bootstrap/assets/js/html5shiv.js' %}"></script>
+		<script src="{% static 'bootstrap/assets/js/respond.min.js' %}"></script>
 		<![endif]-->
 	</head>
 
@@ -110,11 +111,11 @@
 		================================================== -->
 		<!-- Placed at the end of the document so the pages load faster -->
 		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-		<script src="{{ STATIC_URL }}bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
 		
 		<!-- Row link -->
-		<script src="{{ STATIC_URL }}bootstrap-rowlink.min.js"></script>
+		<script src="{% static 'bootstrap-rowlink.min.js' %}"></script>
 		
-		<script src="{{ STATIC_URL }}form.js"></script>
+		<script src="{% static 'form.js' %}"></script>
 	</body>
 </html>
