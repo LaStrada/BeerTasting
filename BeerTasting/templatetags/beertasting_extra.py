@@ -1,7 +1,15 @@
 from django import template
 from Beers.models import Setup
+from django.core.urlresolvers import reverse
 
 register = template.Library()
+
+@register.simple_tag
+def navactive(request, urls):
+    if request.path in ( reverse(url) for url in urls.split() ):
+        return ' class="active"'
+    return ""
+
 
 @register.filter(name="every_other_row")
 def every_other_row(row):

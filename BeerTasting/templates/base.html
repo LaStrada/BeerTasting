@@ -42,10 +42,10 @@
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-						<li class="active">
+						<li{% navactive request 'index' %}>
 							<a href="{% url 'index' %}">Home</a>
 						</li>
-						<li>
+						<li{% navactive request 'stats' %}>
 							<a href="{% url 'stats' %}">Statistics</a>
 						</li>
 					</ul>
