@@ -3,11 +3,19 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db.models import Avg
 
+
+class UntappdUser(models.Model):
+    user = models.ForeignKey(User, primary_key=True)
+    untappd = models.CharField(max_length=100, blank=True)
+    
+    #todo: only one instance per user!
+
 def validate_only_one_instance(obj):
     model = obj.__class__
     if (model.objects.count() > 0 and
         obj.id != model.objects.get().id):
         raise ValidationError("Can only create 1 %s instance" % model.__name__)
+
     
 class Setup(models.Model):
     name = models.CharField(max_length=50)

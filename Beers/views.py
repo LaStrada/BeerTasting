@@ -5,7 +5,8 @@ from django.shortcuts import render, redirect, render_to_response
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.db import connection
 
-from Beers.models import Beer, BeerRating, Setup
+from Beers.models import Beer, BeerRating, Setup, UntappdUser
+from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from django.template import RequestContext, loader
 from django.db.models import Count, Avg
@@ -123,8 +124,42 @@ def login_view(request):
         return HttpResponseRedirect(reverse('login_failed_view'))
 
 
+def register_untappd(request):
+    # http://127.0.0.1:8000/profile/registerUntappd/?code=88BF184AE38DA51A1246D55FA6E28765D3F5C8E3
+    #try:
+    if request.GET['code']:
+        #errors = "Successfully linked to untappd."
+        
+        if UntappdUser.objects.filter(pk = request.user).count > 0:
+            untappd_link = UntappdUser.objects.get(pk = request.user)
+            untappd_link.untappd = request.GET['code']
+        else:
+            untappd_link = UntappdUser(user=request.user, untappd=request.GET['code'])
+        
+        untappd_link.save()
+
+#finally:
+    #errors = "lololol"
+    return HttpResponseRedirect(reverse('profile_view'))
+
+def unregister_untappd(request):
+    untappd_link = UntappdUser.objects.get(pk = request.user)
+    untappd_link.untappd = ''
+    untappd_link.save()
+    
+    return HttpResponseRedirect(reverse('profile_view'))
+
+
 def profile_view(request):
-    return render(request, 'user/profile.html')
+    untappd = False
+    
+    try:
+        u = UntappdUser.objects.get(pk=request.user.id)
+        #u = UntappdUser(user=request.user.id)
+        if u.untappd:
+            untappd = True
+    finally:
+        return render(request, 'user/profile.html', {'untappd':untappd})
 
 
 def logout_view(request):
