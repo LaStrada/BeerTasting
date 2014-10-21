@@ -29,11 +29,11 @@ class Setup(models.Model):
         validate_only_one_instance(self)
 
 
-class Brewery(models.Model):
-    name = models.CharField(max_length=50)
-    
-    def __unicode__(self):
-        return self.name
+# class Brewery(models.Model):
+#     name = models.CharField(max_length=50)
+#     
+#     def __unicode__(self):
+#         return self.name
 
 
 class BeerStyle(models.Model):
@@ -45,7 +45,7 @@ class BeerStyle(models.Model):
 
 class Beer(models.Model):
     name = models.CharField(max_length=50)
-    brewery = models.ForeignKey(Brewery)
+    brewery = models.CharField(max_length=50)
     style = models.ForeignKey(BeerStyle) 
     price = models.IntegerField()
     alcohol = models.FloatField()
