@@ -11,6 +11,15 @@ from django.core.context_processors import csrf
 from django.template import RequestContext, loader
 from django.db.models import Count, Avg
 
+import json, requests
+from collections import namedtuple
+
+def _json_object_hook(d):
+    return namedtuple('X', d.keys())(*d.values())
+
+def json2obj(data):
+    return json.loads(data, object_hook=_json_object_hook)
+
 def index(request):
     if request.user.is_authenticated():
         beers = Beer.objects.all()
@@ -130,6 +139,21 @@ def register_untappd(request):
     if request.GET['code']:
         #errors = "Successfully linked to untappd."
         
+        # verify code
+        
+        client_code = 'EC7EAAB706C553B0691C7DC3C3652CBCAAA1F83B'
+        client_secret = 'F02B37BC4644F2C15AB0CF9DFA5A2FE5603AB6D7'
+        
+        c = pycurl.Curl()
+        c.setopt(pycurl.URL, 'https://untappd.com/oauth/authorize/?client_id=' +
+                 client_code +'&client_secret=' +
+                 client_secret + '&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/&code=' +
+                 request.GET['code'])
+        c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
+        c.setopt(pycurl.VERBOSE, 0)
+        c.perform()
+        
+        
         if UntappdUser.objects.filter(pk = request.user).count > 0:
             untappd_link = UntappdUser.objects.get(pk = request.user)
             untappd_link.untappd = request.GET['code']
@@ -151,15 +175,45 @@ def unregister_untappd(request):
 
 
 def profile_view(request):
-    untappd = False
+    search = ''
+    
+    beers = []
     
     try:
         u = UntappdUser.objects.get(pk=request.user.id)
         #u = UntappdUser(user=request.user.id)
         if u.untappd:
             untappd = True
+    except:
+        untappd = False
     finally:
-        return render(request, 'user/profile.html', {'untappd':untappd})
+        if request.POST.get('search', False):
+            search = request.POST['search']
+            
+            client_id = 'EC7EAAB706C553B0691C7DC3C3652CBCAAA1F83B'
+            client_secret = 'F02B37BC4644F2C15AB0CF9DFA5A2FE5603AB6D7'
+                        
+            url = 'https://api.untappd.com/v4/search/beer/?client_id=' + client_id + '&client_secret=' + client_secret + '&q=' + search
+            
+            resp = requests.get(url=url)
+            
+            data = json.loads(resp.text)
+            
+            beers = data['response']['beers']['items']
+        
+        elif (request.POST.get('name', False) and request.POST.get('brewery', False) and
+                    request.POST.get('style', False) and request.POST.get('abv', False) and
+                    request.POST.get('country', False)):
+            
+            new_beer = Beer(name=request.POST['name'], brewery=request.POST['brewery'],
+                            style=request.POST['style'], alcohol=float(request.POST['abv']),
+                            country=request.POST['country'], label=request.POST['label'])
+            new_beer.save()
+            
+            return HttpResponseRedirect(reverse('index'))
+            
+    
+    return render(request, 'user/profile.html', {'untappd':untappd, 'beers':beers, 'search':search})
 
 
 def logout_view(request):

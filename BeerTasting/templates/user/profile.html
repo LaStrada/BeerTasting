@@ -20,37 +20,47 @@
 			</p>
 			<form action="" method="post">
 				{% csrf_token %}
-				<input type="text" value=""></input>
+				<input type="text" name="search" value="{{ search }}"></input>
 				<input type="submit" value="Search"></input>
 			</form>
 			{% if beers %}
+			<table>
+				<tr>
+					<th>Label</th>
+					<th>Brewery (country)</th>
+					<th>Name</th>
+					<th>ABV</th>
+					<th>&nbsp;</th>
+				</tr>
+				{% for beer in beers %}
 				<form action="" method="post">
-					{% csrf_token %}
-					<table>
-						<tr>
-							<td>&nbsp;</td>
-							<td>Brewery (country)</td>
-							<td>Name</td>
-							<td>&nbsp;</td>
-						</tr>
-						{% for beer in beers %}
-						<tr>
-							<td>
-								<img src="{{ beer.brewery_label }}" />
-							</td>
-							<td>
-								{{ beer.brewery_name }} <i>({{ beer.brewery_country }})</i>
-							</td>
-							<td>
-								{{ beer.name }}
-							</td>
-							<td>
-								<button name="name" value="{{ beer.id }}" type="submit">Add beer</button>
-							</td>
-						</tr>
-					</form>
-					{% endfor %}
-				</table>
+				{% csrf_token %}
+				<tr>
+					<td>
+						<img src="{{ beer.beer.beer_label }}" />
+					</td>
+					<td>
+						{{ beer.brewery.brewery_name }} <i>({{ beer.brewery.country_name }})</i>
+					</td>
+					<td>
+						{{ beer.beer.beer_name }}
+					</td>
+					<td>
+						{{ beer.beer.beer_abv }}
+					</td>
+					<td>
+						<input type="submit" name="{{ beer.beer.bid }}" value="Add beer" />
+						<input type="hidden" name="name" value="{{ beer.beer.beer_name }}" />
+						<input type="hidden" name="brewery" value="{{ beer.brewery.brewery_name }}" />
+						<input type="hidden" name="label" value="{{ beer.beer.beer_label }}" />
+						<input type="hidden" name="abv" value="{{ beer.beer.beer_abv }}" />
+						<input type="hidden" name="style" value="{{ beer.beer.beer_style }}" />
+						<input type="hidden" name="country" value="{{ beer.brewery.country_name }}" />
+					</td>
+				</tr>
+				</form>
+				{% endfor %}
+			</table>
 			{% endif %}
 			{% endif %}
 			

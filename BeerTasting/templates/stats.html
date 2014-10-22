@@ -11,30 +11,30 @@
 					<h2>Beers</h2>
 					<table class="table">
 						<tr class="border">
-							<th>#</th>
+							<th class="hidden-s">#</th>
+							<th class="hidden-m">Label</th>
 							<th>Name</th>
 							<th>Brewery</th>
 							<th class="hidden-xs">Style</th>
-							<th class="hidden-xs">Ibu</th>
-							<th>Alcohol</th>
-							<th>Price</th>
+							<th class="hidden-s">Alcohol</th>
 						</tr>
 						{% if beers %}
 						{% for beer in beers %}
 						
 						<tr class="{{ forloop.counter|every_other_row }}">
-							<td rowspan="2">
+							<td rowspan="2" class="hidden-s">
 								{{ beer.id }}
+							</td>
+							<td rowspan="2">
+								<img src="{{ beer.label }}" />
 							</td>
 							<td>{{ beer.name }}</td>
 							<td>{{ beer.brewery }}</td>
 							<td class="hidden-xs">{{ beer.style }}</td>
-							<td class="hidden-xs">{{ beer.ibu }}</td>
-							<td>{{ beer.alcohol }}</td>
-							<td>{{ beer.price }}</td>
+							<td class="hidden-s">{{ beer.alcohol }}</td>
 						</tr>
 						<tr>
-							<td colspan="6" class="{{ forloop.counter|every_other_row }}">
+							<td colspan="4" class="{{ forloop.counter|every_other_row }}">
 								{% autoescape off %}
 									{{ ratings|print_stars:beer.id }} - {{ ratings|return_with_decimal:beer.id }}
 								{% endautoescape %}

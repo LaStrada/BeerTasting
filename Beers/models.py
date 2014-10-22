@@ -36,20 +36,21 @@ class Setup(models.Model):
 #         return self.name
 
 
-class BeerStyle(models.Model):
-    style = models.CharField(max_length=50)
-    
-    def __unicode__(self):
-        return self.style
+# class BeerStyle(models.Model):
+#     style = models.CharField(max_length=50)
+#     
+#     def __unicode__(self):
+#         return self.style
 
 
 class Beer(models.Model):
     name = models.CharField(max_length=50)
     brewery = models.CharField(max_length=50)
-    style = models.ForeignKey(BeerStyle) 
-    price = models.IntegerField()
+    style = models.CharField(max_length=50) 
+    label = models.CharField(max_length=200)
     alcohol = models.FloatField()
-    ibu = models.IntegerField()
+    country = models.CharField(max_length=50)
+    #ibu = models.IntegerField()
     
     def get_rating(self):
         rating = BeerRating.objects.filter(beer=self.pk).aggregate(Avg('rating'))
