@@ -4,6 +4,7 @@ from django.contrib.auth.views import login, logout
 from django.shortcuts import render, redirect, render_to_response
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.db import connection
+from django.conf import settings
 
 from Beers.models import Beer, BeerRating, Setup, UntappdUser
 from django.contrib.auth.models import User
@@ -141,24 +142,46 @@ def register_untappd(request):
         
         # verify code
         
-        client_code = 'EC7EAAB706C553B0691C7DC3C3652CBCAAA1F83B'
-        client_secret = 'F02B37BC4644F2C15AB0CF9DFA5A2FE5603AB6D7'
-        
-        c = pycurl.Curl()
-        c.setopt(pycurl.URL, 'https://untappd.com/oauth/authorize/?client_id=' +
-                 client_code +'&client_secret=' +
-                 client_secret + '&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/&code=' +
-                 request.GET['code'])
-        c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
-        c.setopt(pycurl.VERBOSE, 0)
-        c.perform()
         
         
-        if UntappdUser.objects.filter(pk = request.user).count > 0:
-            untappd_link = UntappdUser.objects.get(pk = request.user)
-            untappd_link.untappd = request.GET['code']
+        
+        
+#         c = pycurl.Curl()
+#         c.setopt(pycurl.URL, 'https://untappd.com/oauth/authorize/?client_id=' +
+#                  client_code +'&client_secret=' +
+#                  client_secret + '&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/&code=' +
+#                  request.GET['code'])
+#         c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
+#         c.setopt(pycurl.VERBOSE, 0)
+#         c.perform()
+        
+        
+                    
+        url =  'https://untappd.com/oauth/authorize/?client_id=' + settings.CLIENT_ID + '&client_secret=' + settings.CLIENT_SECRET
+        url += '&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/&code=' + request.GET['code']
+        
+        resp = requests.get(url=url)
+        
+        data = json.loads(resp.text)
+        
+        if data['meta']['http_code'] == 200:
+            access_token = data['response']['access_token']
         else:
-            untappd_link = UntappdUser(user=request.user, untappd=request.GET['code'])
+            access_token = ''
+        
+        
+        try:
+            untappd_link = UntappdUser.objects.get(pk = request.user)
+            untappd_link.untappd = access_token
+        except:
+            untappd_link = UntappdUser(user=request.user, untappd=access_token)
+        
+        
+#         if UntappdUser.objects.filter(pk = request.user).count > 0:
+#             untappd_link = UntappdUser.objects.get(pk = request.user)
+#             untappd_link.untappd = access_token
+#         else:
+#             untappd_link = UntappdUser(user=request.user, untappd=access_token)
         
         untappd_link.save()
 
@@ -179,6 +202,9 @@ def profile_view(request):
     
     beers = []
     
+    #todo: remove this?
+    untappd = False
+    
     try:
         u = UntappdUser.objects.get(pk=request.user.id)
         #u = UntappdUser(user=request.user.id)
@@ -189,11 +215,9 @@ def profile_view(request):
     finally:
         if request.POST.get('search', False):
             search = request.POST['search']
-            
-            client_id = 'EC7EAAB706C553B0691C7DC3C3652CBCAAA1F83B'
-            client_secret = 'F02B37BC4644F2C15AB0CF9DFA5A2FE5603AB6D7'
                         
-            url = 'https://api.untappd.com/v4/search/beer/?client_id=' + client_id + '&client_secret=' + client_secret + '&q=' + search
+            url =  'https://api.untappd.com/v4/search/beer/?client_id=' + settings.CLIENT_ID
+            url += '&client_secret=' + settings.CLIENT_SECRET + '&q=' + search
             
             resp = requests.get(url=url)
             
