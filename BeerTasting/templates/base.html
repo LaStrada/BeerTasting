@@ -53,7 +53,7 @@
 					
 					{% if user.is_authenticated %}
 					<ul class="nav navbar-nav pull-right">
-						<li{% navactive request 'stats' %}>
+						<li{% navactive request 'profile_view' %}>
 							<a href="{% url 'profile_view' %}">Profile</a>
 						</li>
 						<li>
