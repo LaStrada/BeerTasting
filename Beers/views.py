@@ -200,7 +200,7 @@ def unregister_untappd(request):
 def uploadRatingsToUntappd(request):
     #check if user is linked to Untappd
     errors = ''
-    
+    badges = []
     url = ''
     
     untappd_link = UntappdUser.objects.get(pk = request.user)
@@ -208,8 +208,6 @@ def uploadRatingsToUntappd(request):
         errors = 'Not linked to untappd.'
     else:
         ratings = BeerRating.objects.filter(user=request.user)
-        
-        badges = 0
         uploaded = 0
         
         for rating in ratings:
@@ -247,13 +245,14 @@ def uploadRatingsToUntappd(request):
                 payload = {'gmt_offset': 1,
                            'timezone': 1,
                            'bid': rating.beer.untappdId,
-                           'foursquare_id': setup.foursquare_id,
-                           'foursquare': 'yes',
+                           #'bid': '510805b345b04ecf5374ff86',
                            'shout': rating.comment,
+                           #'shout': 'test comment',
                            'rating': (str(float(rating.rating) / 2))
+                           #'rating': '3.5'
                            }
                 
-                resp = requests.get(url=url, data=payload)
+                resp = requests.post(url=url, data=payload)
                 
                 data = json.loads(resp.text)
                 
@@ -266,12 +265,16 @@ def uploadRatingsToUntappd(request):
                     
                         if data['response']['badges'] > 0:
                             badges += data['response']['badges']
-                        
-                        return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded, 'errors':errors, 'url':url, 'data':data})
+                            
+                            for b in data['response']['badges']['items']:
+                                badges.append({'badge_name': b.badge_name,
+                                               'badge_description': b.badge_description,
+                                               'lg': b.lg}
+                                              )
                 except:
                     pass
     
-    return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded, 'errors':errors, 'url':url})
+    return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded, 'errors':errors})
 
 """
 https://api.untappd.com/v4/checkin/add/
