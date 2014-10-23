@@ -197,8 +197,100 @@ def unregister_untappd(request):
     return HttpResponseRedirect(reverse('profile_view'))
 
 
+def uploadRatingsToUntappd(request):
+    #check if user is linked to Untappd
+    errors = ''
+    
+    url = ''
+    
+    untappd_link = UntappdUser.objects.get(pk = request.user)
+    if untappd_link.untappd == '':
+        errors = 'Not linked to untappd.'
+    else:
+        ratings = BeerRating.objects.filter(user=request.user)
+        
+        badges = 0
+        uploaded = 0
+        
+        for rating in ratings:
+            if rating.uploadedToUntappd != True:
+                """
+                access_token (required) - The access_token for authorized calls (Note: this must be called via a GET parameter - ?access_token=XXXXXX, everything else is a POST parameter)
+                gmt_offset (required) - The numeric value of hours the user is away from the GMT (Greenwich Mean Time)
+                timezone (required) - The timezone of the user, such as EST or PST.
+                bid (required) - The numeric Beer ID you want to check into.
+                foursquare_id (optional) - The MD5 hash ID of the Venue you want to attach the beer checkin. This HAS TO BE the MD5 non-numeric hash from the foursquare v2.
+                foursquare (optional) - Default = "off", Pass "on" to checkin on foursquare
+                shout (optional) - The text you would like to include as a comment of the checkin. Max of 140 characters.
+                rating (optional) - The rating score you would like to add for the beer. This can only be 1 to 5 (half ratings are included). You can't rate a beer a 0.
+                """
+                
+                setup = Setup.objects.get(pk=1)
+                untappd = UntappdUser.objects.get(user=request.user)
+                
+                url =  'https://api.untappd.com/v4/checkin/add/?'
+#                 url += 'client_id=' + settings.CLIENT_ID
+#                 url += '&client_secret=' + settings.CLIENT_SECRET
+                url += '&access_token=' + untappd.untappd
+                
+                
+                #payload = '&gmt_offset=1'
+                #payload += '&timezone=1'
+                #payload += '&bid=' + rating.beer.untappdId
+                #if setup.foursquare_id != '':
+                #    payload += '&foursquare_id=' + setup.foursquare_id
+                #    payload += '&foursquare=yes'
+                #if rating.comment != '':
+                #    payload += '&shout=' 
+                #url += '&rating=' + str(float(rating.rating) / 2)
+                
+                payload = {'gmt_offset': 1,
+                           'timezone': 1,
+                           'bid': rating.beer.untappdId,
+                           'foursquare_id': setup.foursquare_id,
+                           'foursquare': 'yes',
+                           'shout': rating.comment,
+                           'rating': (str(float(rating.rating) / 2))
+                           }
+                
+                resp = requests.get(url=url, data=payload)
+                
+                data = json.loads(resp.text)
+                
+                try:
+                    if data['response']['result'] == 'success':
+                        update_rating = BeerRating.objects.get(pk=rating.id)
+                        update_rating.uploadedToUntappd = True
+                        update_rating.save()
+                        uploaded += 1
+                    
+                        if data['response']['badges'] > 0:
+                            badges += data['response']['badges']
+                        
+                        return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded, 'errors':errors, 'url':url, 'data':data})
+                except:
+                    pass
+    
+    return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded, 'errors':errors, 'url':url})
+
+"""
+https://api.untappd.com/v4/checkin/add/
+?client_id=EC7EAAB706C553B0691C7DC3C3652CBCAAA1F83B
+&client_secret=F02B37BC4644F2C15AB0CF9DFA5A2FE5603AB6D7
+&access_token=61CEAA71D1B399C2443B56D67B1D7056ED8C4312
+&gmt_offset=1
+&timezone=1
+&bid=313273
+&foursquare_id=510805b345b04ecf5374ff86
+&foursquare=yes
+&rating=4.0
+"""
+
+
 def profile_view(request):
     search = ''
+    
+    setup = Setup.objects.get(pk=1)
     
     beers = []
     
@@ -225,19 +317,23 @@ def profile_view(request):
             
             beers = data['response']['beers']['items']
         
-        elif (request.POST.get('name', False) and request.POST.get('brewery', False) and
-                    request.POST.get('style', False) and request.POST.get('abv', False) and
-                    request.POST.get('country', False)):
+        elif (request.POST.get('name', False) and
+                    request.POST.get('brewery', False) and
+                    request.POST.get('style', False) and
+                    request.POST.get('abv', False) and
+                    request.POST.get('country', False) and
+                    request.POST.get('bid', False)):
             
             new_beer = Beer(name=request.POST['name'], brewery=request.POST['brewery'],
                             style=request.POST['style'], alcohol=float(request.POST['abv']),
-                            country=request.POST['country'], label=request.POST['label'])
+                            country=request.POST['country'], label=request.POST['label'],
+                            untappdId=request.POST['bid'])
             new_beer.save()
             
             return HttpResponseRedirect(reverse('index'))
             
     
-    return render(request, 'user/profile.html', {'untappd':untappd, 'beers':beers, 'search':search})
+    return render(request, 'user/profile.html', {'finished':setup.finished, 'untappd':untappd, 'beers':beers, 'search':search})
 
 
 def logout_view(request):

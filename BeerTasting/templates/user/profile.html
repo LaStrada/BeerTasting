@@ -9,6 +9,13 @@
 			<p>
 			{% if untappd %}
 			<a href="{% url 'unregister_untappd' %}">Unlink Untappd.</a>
+			
+			{% if finished %}
+			</p>
+			<a href="{% url 'uploadRatingsToUntappd' %}">Checkin beers.</a>
+			<p>
+			{% endif %}
+			
 			{% else %}
 			<a href="https://untappd.com/oauth/authenticate/?client_id=EC7EAAB706C553B0691C7DC3C3652CBCAAA1F83B&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/">Link to Untappd.</a>
 			{% endif %}
@@ -50,6 +57,7 @@
 					</td>
 					<td>
 						<input type="submit" name="{{ beer.beer.bid }}" value="Add beer" />
+						<input type="hidden" name="bid" value="{{ beer.beer.bid }}" />
 						<input type="hidden" name="name" value="{{ beer.beer.beer_name }}" />
 						<input type="hidden" name="brewery" value="{{ beer.brewery.brewery_name }}" />
 						<input type="hidden" name="label" value="{{ beer.beer.beer_label }}" />

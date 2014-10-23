@@ -21,6 +21,7 @@ class Setup(models.Model):
     name = models.CharField(max_length=50)
     intro = models.TextField()
     finished = models.BooleanField()
+    foursquare_id = models.CharField(max_length=50, blank=True)
     
     def __unicode__(self):
         return self.name
@@ -50,6 +51,7 @@ class Beer(models.Model):
     label = models.CharField(max_length=200)
     alcohol = models.FloatField()
     country = models.CharField(max_length=50)
+    untappdId = models.CharField(max_length=50)
     #ibu = models.IntegerField()
     
     def get_rating(self):
@@ -68,6 +70,7 @@ class BeerRating(models.Model):
     beer = models.ForeignKey(Beer, related_name='ratings')
     rating = models.IntegerField(validators=[validate_rating])
     comment = models.CharField(max_length=500, blank=True)
+    uploadedToUntappd = models.BooleanField(default=False)
     
     def __unicode__(self):
         return unicode("User: %s, Beer: %s, Rating: %d" % (self.user, self.beer, self.rating))
