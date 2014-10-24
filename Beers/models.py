@@ -19,9 +19,11 @@ def validate_only_one_instance(obj):
     
 class Setup(models.Model):
     name = models.CharField(max_length=50)
-    intro = models.TextField()
+    intro = models.TextField(blank=True)
     finished = models.BooleanField()
     foursquare_id = models.CharField(max_length=50, blank=True)
+    geolat = models.FloatField(default=0)
+    geolng = models.FloatField(default=0)
     
     def __unicode__(self):
         return self.name
