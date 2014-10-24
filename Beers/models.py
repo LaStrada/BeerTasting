@@ -10,12 +10,12 @@ class UntappdUser(models.Model):
     
     #todo: only one instance per user!
 
+
 def validate_only_one_instance(obj):
     model = obj.__class__
     if (model.objects.count() > 0 and
         obj.id != model.objects.get().id):
         raise ValidationError("Can only create 1 %s instance" % model.__name__)
-
     
 class Setup(models.Model):
     name = models.CharField(max_length=50)
@@ -28,20 +28,6 @@ class Setup(models.Model):
     
     def clean(self):
         validate_only_one_instance(self)
-
-
-# class Brewery(models.Model):
-#     name = models.CharField(max_length=50)
-#     
-#     def __unicode__(self):
-#         return self.name
-
-
-# class BeerStyle(models.Model):
-#     style = models.CharField(max_length=50)
-#     
-#     def __unicode__(self):
-#         return self.style
 
 
 class Beer(models.Model):
