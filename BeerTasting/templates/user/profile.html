@@ -6,22 +6,25 @@
 	<div class="row">
 		<div class=".col-lg-12">
 			<h2>Profile</h2>
-			<p>
+
 			{% if untappd %}
-			<a href="{% url 'unregister_untappd' %}">Unlink Untappd.</a>
-			
-			{% if finished %}
-			</p>
-			<a href="{% url 'uploadRatingsToUntappd' %}">Checkin beers.</a>
+			<h4>Untappd</h4>
 			<p>
-			{% endif %}
+				<a href="{% url 'unregister_untappd' %}">Unlink Untappd.</a>
+				{% if finished %}
+				<br />
+				<a href="{% url 'uploadRatingsToUntappd' %}">Check-in beers.</a>
+				{% endif %}
+			</p>
 			
 			{% else %}
-			<a href="https://untappd.com/oauth/authenticate/?client_id=EC7EAAB706C553B0691C7DC3C3652CBCAAA1F83B&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/">Link to Untappd.</a>
-			{% endif %}
+			<p>
+				<a href="https://untappd.com/oauth/authenticate/?client_id={{ settings.CLIENT_ID }}&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/">Link to Untappd.</a>
 			</p>
+			{% endif %}
 			
 			{% if user.is_superuser %}
+			<h4>Add beers</h4>
 			<p>
 				Search for new Beer:<br />
 			</p>
