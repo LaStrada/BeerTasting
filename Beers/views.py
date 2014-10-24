@@ -52,8 +52,11 @@ def stats(request):
 
 def rate_beer(request, beer_id):
     errors = ''
+    beername = []
     c = {}
     c.update(csrf(request))
+
+    setup = Setup.objects.get(id=1)
     
     try:
         b_id = int(beer_id)
@@ -84,7 +87,8 @@ def rate_beer(request, beer_id):
                 
             #Insert and return to index
             elif beers.count() == 0:
-                new_rating = BeerRating(user=request.user, beer_id=b_id, rating=request.POST['star'], comment=request.POST['comment'])
+                new_rating = BeerRating(user=request.user, beer_id=b_id, rating=request.POST['star'],
+                                        comment=request.POST['comment'])
                 new_rating.save()
                 return HttpResponseRedirect(reverse('index'))
                 
@@ -100,7 +104,10 @@ def rate_beer(request, beer_id):
     try:
         beer = BeerRating.objects.get(user=request.user.id, beer=b_id)
     except:
-        beer = ''
+        if setup.finished == True:
+            beername = Beer.objects.get(pk=b_id)
+        else:
+            beer = ''
     
     #Change rate button if user has rated this beer before
     if beers.count() > 0:
@@ -109,7 +116,8 @@ def rate_beer(request, beer_id):
         rated_before = False
     
     return render(request, 'rate_beer.html', {'beer':beer, 'b_id':b_id, 'errors':errors,
-                                              'finished':setup.finished, 'rated_before':rated_before})
+                                              'finished':setup.finished, 'rated_before':rated_before,
+                                              'beername':beername})
 
 
 def login_view(request):
@@ -214,47 +222,50 @@ def uploadRatingsToUntappd(request):
         for rating in ratings:
             if rating.uploadedToUntappd != True:
                 """
-                access_token (required) - The access_token for authorized calls (Note: this must be called via a GET parameter - ?access_token=XXXXXX, everything else is a POST parameter)
+                access_token (required) - The access_token for authorized calls
+                        (Note: this must be called via a GET parameter:
+                        ?access_token=XXXXXX, everything else is a POST parameter)
                 gmt_offset (required) - The numeric value of hours the user is away from the GMT (Greenwich Mean Time)
                 timezone (required) - The timezone of the user, such as EST or PST.
                 bid (required) - The numeric Beer ID you want to check into.
-                foursquare_id (optional) - The MD5 hash ID of the Venue you want to attach the beer checkin. This HAS TO BE the MD5 non-numeric hash from the foursquare v2.
+                foursquare_id (optional) - The MD5 hash ID of the Venue you want to attach the beer checkin.
+                        This HAS TO BE the MD5 non-numeric hash from the foursquare v2.
                 foursquare (optional) - Default = "off", Pass "on" to checkin on foursquare
                 shout (optional) - The text you would like to include as a comment of the checkin. Max of 140 characters.
-                rating (optional) - The rating score you would like to add for the beer. This can only be 1 to 5 (half ratings are included). You can't rate a beer a 0.
+                rating (optional) - The rating score you would like to add for the beer. This can only be 1 to 5
+                        (half ratings are included). You can't rate a beer a 0.
                 """
                 
                 setup = Setup.objects.get(pk=1)
                 untappd = UntappdUser.objects.get(user=request.user)
                 
                 url =  'https://api.untappd.com/v4/checkin/add/?'
-#                 url += 'client_id=' + settings.CLIENT_ID
-#                 url += '&client_secret=' + settings.CLIENT_SECRET
                 url += '&access_token=' + untappd.untappd
                 
                 
-                #payload = '&gmt_offset=1'
-                #payload += '&timezone=1'
-                #payload += '&bid=' + rating.beer.untappdId
-                #if setup.foursquare_id != '':
-                #    payload += '&foursquare_id=' + setup.foursquare_id
-                #    payload += '&foursquare=yes'
-                #if rating.comment != '':
-                #    payload += '&shout=' 
-                #url += '&rating=' + str(float(rating.rating) / 2)
-                
+                # Create data to post
                 payload = {'gmt_offset': 1,
                            'timezone': 1,
                            'bid': rating.beer.untappdId,
                            #'bid': '510805b345b04ecf5374ff86',
                            'shout': rating.comment,
                            #'shout': 'test comment',
-                           'rating': (str(float(rating.rating) / 2))
-                           #'rating': '3.5'
                            }
+
+                # Add venue only if all required data is available
+                if setup.geolng and setup.geolot and setup.foursquare_id:
+                    payload['foursquare_id'] = setup.foursquare_id
+                    payload['geolng'] = setup.foursquare_id
+                    payload['geolot'] = setup.geolot
+
+                # Add rating only if rated
+                if rating.rating >= 0 and rating.rating <= 10:
+                    payload['rating'] = (str(float(rating.rating) / 2))
                 
+                # Send data and store the response
                 resp = requests.post(url=url, data=payload)
                 
+                # Convert to json
                 data = json.loads(resp.text)
                 
                 try:
@@ -276,7 +287,8 @@ def uploadRatingsToUntappd(request):
                 except:
                     pass
     
-    return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded, 'errors':errors, 'numberOfBadges':numberOfBadges})
+    return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded,
+                                                        'errors':errors, 'numberOfBadges':numberOfBadges})
 
 
 def profile_view(request):
