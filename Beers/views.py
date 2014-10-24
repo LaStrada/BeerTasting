@@ -202,6 +202,7 @@ def uploadRatingsToUntappd(request):
     errors = ''
     badges = []
     url = ''
+    numberOfBadges = 0
     
     untappd_link = UntappdUser.objects.get(pk = request.user)
     if untappd_link.untappd == '':
@@ -271,23 +272,11 @@ def uploadRatingsToUntappd(request):
                                                'badge_description': b.badge_description,
                                                'lg': b.lg}
                                               )
+                                numberOfBadges += 1
                 except:
                     pass
     
-    return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded, 'errors':errors})
-
-"""
-https://api.untappd.com/v4/checkin/add/
-?client_id=EC7EAAB706C553B0691C7DC3C3652CBCAAA1F83B
-&client_secret=F02B37BC4644F2C15AB0CF9DFA5A2FE5603AB6D7
-&access_token=61CEAA71D1B399C2443B56D67B1D7056ED8C4312
-&gmt_offset=1
-&timezone=1
-&bid=313273
-&foursquare_id=510805b345b04ecf5374ff86
-&foursquare=yes
-&rating=4.0
-"""
+    return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded, 'errors':errors, 'numberOfBadges':numberOfBadges})
 
 
 def profile_view(request):
