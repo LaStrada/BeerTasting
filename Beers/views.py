@@ -226,9 +226,9 @@ def uploadRatingsToUntappd(request):
                            }
 
                 # Add venue only if all required data is available
-                if setup.geolng and setup.geolot and setup.foursquare_id:
-                    payload['foursquare_id'] = setup.foursquare_id
-                    payload['geolng'] = setup.foursquare_id
+                if setup.geolng and setup.geolot and setup.venue_id:
+                    payload['foursquare_id'] = setup.venue_id
+                    payload['geolng'] = setup.geolng
                     payload['geolot'] = setup.geolot
 
                 # Add rating only if rated
@@ -313,8 +313,47 @@ def profile_view(request):
                 
         
         return render(request, 'user/profile.html', {'finished':setup.finished, 'untappd':untappd,
-                                                    'beers':beers, 'search':search, 'CLIENT_ID':CLIENT_ID})
+                                                    'beers':beers, 'search':search, 'CLIENT_ID':CLIENT_ID,
+                                                    'venue_id':setup.venue_id})
     raise Http404
+
+
+def register_foursquare(request):
+    # Only admins can change this
+    #try:
+    if request.user.is_superuser:
+        setup = Setup.objects.get(pk=1)
+
+        # check if post data is boolean
+        if "foursquare_id" in request.POST:
+            if request.POST['foursquare_id'] == '':
+                setup.venue_id = ''
+            else:
+                #search after the untappd venue id
+                url =  'https://api.untappd.com/v4/venue/foursquare_lookup/' + request.POST['foursquare_id']
+                url += '?client_id=' + settings.CLIENT_ID
+                url += '&client_secret=' + settings.CLIENT_SECRET
+                resp = requests.get(url=url)
+                data = json.loads(resp.text)
+
+                #if True:
+                if data['meta']['code'] == 200:
+                    if data['response']['venue']['count'] == 1:
+                        setup.venue_id = data['response']['venue']['items'][0]['foursquare_id']
+                    else:
+                        # found more than one place
+                        # todo: change to custom error message
+                        raise Http404
+                else:
+                    # json error / wrong request
+                    # todo: change to custom error message
+                    raise Http404
+            setup.save()
+#    except:
+#        raise Http404
+
+    return redirect('profile_view')
+
 
 def event_finished(request):
     # Only admins can change this

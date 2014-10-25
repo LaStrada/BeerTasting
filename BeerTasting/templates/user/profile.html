@@ -27,6 +27,15 @@
 			<h3>Admin</h3>
 
 			<p>
+				<form action="{% url 'register_foursquare' %}" method="post">
+					{% csrf_token %}
+					Foursquare id:<br />
+					<input type="textbox" name="foursquare_id" value="{{ venue_id }}"></input>
+					<input type="submit" value="Save"></input>
+				</form>
+			</p>
+
+			<p>
 				<form action="{% url 'event_finished' %}" method="post">
 					{% csrf_token %}
 					<input type="checkbox" onclick="this.form.submit();" name="finished" value="finished" {% if finished %}checked{% endif %}>Finished? <i>(Show beer names and show statistics)</i></input>
