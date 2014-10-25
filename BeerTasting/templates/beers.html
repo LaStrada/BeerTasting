@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load beertasting_extra %}
+
+{% block content %}
+	<div class="row">
+		<div class=".col-lg-12">
+			<h4>Beers</h4>
+
+			{% if user.is_authenticated %}
+			<table class="table" data-provides="rowlink">
+				<tr class="border">
+					<th>#</th>
+					{% if setup.finished %}
+					<th>Beer</th>
+					{% endif %}
+					<th>Rating</th>
+				</tr>
+				{% if beers %}
+				{% for beer in beers %}
+				
+				<tr>
+					<td>
+						<a href="{% url 'rate_beer' forloop.counter %}">
+						{{ beer.id }}
+						</a>
+					</td>
+					{% if setup.finished %}
+					<td>
+						{{beer.brewery}} - <i>{{beer.name}}</i>
+					</td>
+					{% endif %}
+					<td>
+						{% autoescape off %}
+							{{ ratings|print_stars_with_comments:beer.id }}
+						{% endautoescape %}
+					</td>
+				</tr>
+				{% endfor %}
+				{% endif %}
+			</table>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

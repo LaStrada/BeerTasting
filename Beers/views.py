@@ -22,15 +22,18 @@ def json2obj(data):
     return json.loads(data, object_hook=_json_object_hook)
 
 def index(request):
+    setup = Setup.objects.get(pk=1)
+    return render(request, 'index.html', {'setup':setup})
+
+def beers(request):
     if request.user.is_authenticated():
+        setup = Setup.objects.get(pk=1)
         beers = Beer.objects.all()
         ratings = BeerRating.objects.filter(user_id=request.user.id)
-        setup = Setup.objects.get(pk=1)
-        
-        return render(request, 'index.html', {'beers':beers, 'ratings':ratings,
-                                              'finished':setup.finished})
-    
-    return render(request, 'index_not_logged_in.html')
+        return render(request, 'beers.html', {'setup':setup, 'beers':beers, 'ratings':ratings})
+
+    # if user is not logged in, redirect to index
+    return HttpResponseRedirect(reverse('index'))
 
 def stats(request):
     errors = []
@@ -127,25 +130,28 @@ def rate_beer(request, beer_id):
 
 
 def login_view(request):
-    c = {}
-    c.update(csrf(request))
-    
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            
-            return HttpResponseRedirect(reverse('index'))
+    try:
+        c = {}
+        c.update(csrf(request))
+        
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                
+                return HttpResponseRedirect(reverse('index'))
 
+            else:
+                # Return a 'disabled account' error message
+                return HttpResponseRedirect(reverse('login_failed_view'))
         else:
-            # Return a 'disabled account' error message
+            # Return an 'invalid login' error message.
             return HttpResponseRedirect(reverse('login_failed_view'))
-    else:
-        # Return an 'invalid login' error message.
-        return HttpResponseRedirect(reverse('login_failed_view'))
+    except:
+        raise Http404
 
 
 def register_untappd(request):
@@ -256,7 +262,7 @@ def uploadRatingsToUntappd(request):
                         update_rating.save()
                         uploaded += 1
 
-                        numberOfBadges = data['response']['badges']['count']
+                        numberOfBadges += data['response']['badges']['count']
 
                         for x in range (0, numberOfBadges):
                             badges.append({'name':data['response']['badges']['items'][x]['badge_name'],

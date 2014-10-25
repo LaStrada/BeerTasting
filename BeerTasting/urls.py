@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     
     url(r'^$', 'Beers.views.index', name='index'),
+
+    url(r'^beers/', 'Beers.views.beers', name='beers'),
     
     url(r'^login/', 'Beers.views.login_view', name='login_view'),
     url(r'^login_failed/$', 'Beers.views.login_failed_view', name='login_failed_view'),
