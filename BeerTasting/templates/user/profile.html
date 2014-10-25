@@ -7,8 +7,8 @@
 		<div class=".col-lg-12">
 			<h2>Profile</h2>
 
-			{% if untappd %}
 			<h4>Untappd</h4>
+			{% if untappd %}
 			<p>
 				<a href="{% url 'unregister_untappd' %}">Unlink Untappd.</a>
 				{% if finished %}
@@ -19,11 +19,20 @@
 			
 			{% else %}
 			<p>
-				<a href="https://untappd.com/oauth/authenticate/?client_id={{ settings.CLIENT_ID }}&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/">Link to Untappd.</a>
+				<a href="https://untappd.com/oauth/authenticate/?client_id={{ CLIENT_ID }}&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/">Link to Untappd.</a>
 			</p>
 			{% endif %}
 			
 			{% if user.is_superuser %}
+			<h3>Admin</h3>
+
+			<p>
+				<form action="{% url 'event_finished' %}" method="post">
+					{% csrf_token %}
+					<input type="checkbox" onclick="this.form.submit();" name="finished" value="finished" {% if finished %}checked{% endif %}>Finished? <i>(Show beer names and show statistics)</i></input>
+				</form>
+			</p>
+
 			<h4>Add beers</h4>
 			<p>
 				Search for new Beer:<br />

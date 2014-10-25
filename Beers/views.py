@@ -143,29 +143,11 @@ def login_view(request):
 
 
 def register_untappd(request):
-    # http://127.0.0.1:8000/profile/registerUntappd/?code=88BF184AE38DA51A1246D55FA6E28765D3F5C8E3
     #try:
     if request.GET['code']:
-        #errors = "Successfully linked to untappd."
-        
         # verify code
-        
-        
-        
-        
-        
-#         c = pycurl.Curl()
-#         c.setopt(pycurl.URL, 'https://untappd.com/oauth/authorize/?client_id=' +
-#                  client_code +'&client_secret=' +
-#                  client_secret + '&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/&code=' +
-#                  request.GET['code'])
-#         c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
-#         c.setopt(pycurl.VERBOSE, 0)
-#         c.perform()
-        
-        
-                    
-        url =  'https://untappd.com/oauth/authorize/?client_id=' + settings.CLIENT_ID + '&client_secret=' + settings.CLIENT_SECRET
+        url =  'https://untappd.com/oauth/authorize/?client_id='
+        url += settings.CLIENT_ID + '&client_secret=' + settings.CLIENT_SECRET
         url += '&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/&code=' + request.GET['code']
         
         resp = requests.get(url=url)
@@ -184,17 +166,8 @@ def register_untappd(request):
         except:
             untappd_link = UntappdUser(user=request.user, untappd=access_token)
         
-        
-#         if UntappdUser.objects.filter(pk = request.user).count > 0:
-#             untappd_link = UntappdUser.objects.get(pk = request.user)
-#             untappd_link.untappd = access_token
-#         else:
-#             untappd_link = UntappdUser(user=request.user, untappd=access_token)
-        
         untappd_link.save()
 
-#finally:
-    #errors = "lololol"
     return HttpResponseRedirect(reverse('profile_view'))
 
 def unregister_untappd(request):
@@ -292,52 +265,69 @@ def uploadRatingsToUntappd(request):
 
 
 def profile_view(request):
-    search = ''
-    
-    setup = Setup.objects.get(pk=1)
-    
-    beers = []
-    
-    #todo: remove this?
-    untappd = False
-    
-    try:
-        u = UntappdUser.objects.get(pk=request.user.id)
-        #u = UntappdUser(user=request.user.id)
-        if u.untappd:
-            untappd = True
-    except:
-        untappd = False
-    finally:
-        if request.POST.get('search', False):
-            search = request.POST['search']
-                        
-            url =  'https://api.untappd.com/v4/search/beer/?client_id=' + settings.CLIENT_ID
-            url += '&client_secret=' + settings.CLIENT_SECRET + '&q=' + search
-            
-            resp = requests.get(url=url)
-            
-            data = json.loads(resp.text)
-            
-            beers = data['response']['beers']['items']
+    if request.user.is_authenticated():
+        search = ''
+        CLIENT_ID = settings.CLIENT_ID
         
-        elif (request.POST.get('name', False) and
-                    request.POST.get('brewery', False) and
-                    request.POST.get('style', False) and
-                    request.POST.get('abv', False) and
-                    request.POST.get('country', False) and
-                    request.POST.get('bid', False)):
+        setup = Setup.objects.get(pk=1)
+        
+        beers = []
+        
+        #todo: remove this?
+        untappd = False
+        
+        try:
+            u = UntappdUser.objects.get(pk=request.user.id)
+            #u = UntappdUser(user=request.user.id)
+            if u.untappd:
+                untappd = True
+        except:
+            untappd = False
+        finally:
+            if request.POST.get('search', False) and request.user.is_superuser:
+                search = request.POST['search']
+                            
+                url =  'https://api.untappd.com/v4/search/beer/?client_id=' + settings.CLIENT_ID
+                url += '&client_secret=' + settings.CLIENT_SECRET + '&q=' + search
+                
+                resp = requests.get(url=url)
+                
+                data = json.loads(resp.text)
+                
+                beers = data['response']['beers']['items']
             
-            new_beer = Beer(name=request.POST['name'], brewery=request.POST['brewery'],
-                            style=request.POST['style'], alcohol=float(request.POST['abv']),
-                            country=request.POST['country'], label=request.POST['label'],
-                            untappdId=request.POST['bid'])
-            new_beer.save()
-            
-            return HttpResponseRedirect(reverse('index'))
-            
-    
-    return render(request, 'user/profile.html', {'finished':setup.finished, 'untappd':untappd, 'beers':beers, 'search':search})
+            elif (request.POST.get('name', False) and
+                        request.POST.get('brewery', False) and
+                        request.POST.get('style', False) and
+                        request.POST.get('abv', False) and
+                        request.POST.get('country', False) and
+                        request.POST.get('bid', False)):
+                
+                new_beer = Beer(name=request.POST['name'], brewery=request.POST['brewery'],
+                                style=request.POST['style'], alcohol=float(request.POST['abv']),
+                                country=request.POST['country'], label=request.POST['label'],
+                                untappdId=request.POST['bid'])
+                new_beer.save()
+
+                return HttpResponseRedirect(reverse('index'))
+                
+        
+        return render(request, 'user/profile.html', {'finished':setup.finished, 'untappd':untappd,
+                                                    'beers':beers, 'search':search, 'CLIENT_ID':CLIENT_ID})
+    raise Http404
+
+def event_finished(request):
+    # Only admins can change this
+    if request.user.is_superuser:
+        setup = Setup.objects.get(pk=1)
+
+        # check if post data is boolean
+        if "finished" in request.POST:
+            setup.finished = True
+        else:
+            setup.finished = False
+        setup.save()
+    return redirect('profile_view')
 
 
 def logout_view(request):

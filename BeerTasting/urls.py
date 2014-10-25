@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     #url(r'^profile/registerUntappd/?code=(\w+)$', 'Beers.views.register_untappd', name='register_untappd'),
     
     url(r'^profile/checkingBeers/$', 'Beers.views.uploadRatingsToUntappd', name='uploadRatingsToUntappd'),
+
+    url(r'^profile/event_finished/$', 'Beers.views.event_finished', name='event_finished'),
     
     url(r'^profile/registerUntappd/$', 'Beers.views.register_untappd', name='register_untappd'),
     url(r'^profile/unregisterUntappd/$', 'Beers.views.unregister_untappd', name='unregister_untappd'),
