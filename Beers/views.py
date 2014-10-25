@@ -43,6 +43,8 @@ def stats(request):
                                             FROM Beers_beerrating
                                             GROUP BY beer_id
                                             ''')
+
+            #todo: Only show statistics if all the beers have been rated
         
             return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
         else:
