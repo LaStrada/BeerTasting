@@ -30,7 +30,11 @@
 				<form action="{% url 'register_foursquare' %}" method="post">
 					{% csrf_token %}
 					Foursquare id:<br />
-					<input type="textbox" name="foursquare_id" value="{{ venue_id }}"></input>
+					<input type="textbox" name="foursquare_id" value="{{ setup.venue_id }}"></input><br />
+					Latitude:<br />
+					<input type="textbox" name="geolat" value="{{ setup.geolat }}"></input><br />
+					Longitude:<br />
+					<input type="textbox" name="geolng" value="{{ setup.geolng }}"></input><br />
 					<input type="submit" value="Save"></input>
 				</form>
 			</p>
