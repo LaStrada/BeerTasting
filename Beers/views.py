@@ -33,7 +33,9 @@ def index(request):
     return render(request, 'index_not_logged_in.html')
 
 def stats(request):
-    #try:
+    errors = []
+
+    try:
         setup = Setup.objects.get(id=1)
         
         if(setup.finished == True):
@@ -45,12 +47,14 @@ def stats(request):
                                             ''')
 
             #todo: Only show statistics if all the beers have been rated
+            #add custom error message
         
             return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
         else:
             return HttpResponseRedirect(reverse('index'))
-    #except:
-        #return HttpResponseRedirect(reverse('index'))
+    except:
+        #todo: add custom error message
+        return HttpResponseRedirect(reverse('index'))
 
 def rate_beer(request, beer_id):
     errors = ''
