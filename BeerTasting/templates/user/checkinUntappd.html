@@ -8,7 +8,7 @@
 			<h2>Profile</h2>
 			
 			<p>
-				You checked in {{ uploaded }}{% if badges %} beers and got {{ numberOfBadges }} badges{% endif %}.
+				You checked in {{ uploaded }} beers{% if badges %} and got {{ numberOfBadges }} badges{% endif %}.
 			</p>
 
 			{% if failed %}
@@ -25,16 +25,13 @@
 				</tr>
 				<tr>
 					<td>
-						{{ badge.name }}
+						<b>{{ badge.name }}</b><br />
+						{{ badge.description }}
 					</td>
 				</tr>
 				{% endfor %}
 			</table>
 			{% endif %}
-
-			<p>
-				{{ d }}
-			</p>
 		</div>
 	</div>
 {% endblock %}

@@ -182,12 +182,9 @@ def uploadRatingsToUntappd(request):
     #check if user is linked to Untappd
     if request.user.is_authenticated():
         errors = ''
-        badges = {}
+        badges = []
         failed = 0
         url = ''
-
-        d = {}
-        count = 0
 
         numberOfBadges = 0
         numberOfBeers = 0
@@ -200,8 +197,6 @@ def uploadRatingsToUntappd(request):
             uploaded = 0
             
             for rating in ratings:
-                count += 1
-
                 if rating.uploadedToUntappd != True:
                     """
                     access_token (required) - The access_token for authorized calls
@@ -247,27 +242,29 @@ def uploadRatingsToUntappd(request):
                     
                     # Convert to json
                     data = json.loads(resp.text)
-
-                    d[count-1] = data
                     
-                    try:
-                        if data['response']['result'] == 'success':
-                            update_rating = BeerRating.objects.get(pk=rating.id)
-                            update_rating.uploadedToUntappd = True
-                            update_rating.save()
-                            uploaded += 1
+                    #try:
+                    if data['response']['result'] == 'success':
+                        update_rating = BeerRating.objects.get(pk=rating.id)
+                        update_rating.uploadedToUntappd = True
+                        update_rating.save()
+                        uploaded += 1
 
-                            numberOfBadges = data['response']['badges']['count']
+                        numberOfBadges = data['response']['badges']['count']
 
-                            for x in range (0, numberOfBadges):
-                                badges[x] = data['response']['badges']['items'][x]
+                        for x in range (0, numberOfBadges):
+                            badges.append({'name':data['response']['badges']['items'][x]['badge_name'],
+                                        'description':data['response']['badges']['items'][x]['badge_description'],
+                                        'img':data['response']['badges']['items'][x]['badge_image']['md']})
                         
-                    except:
-                        failed += 1
+                    #except:
+                    #    failed += 1
+
+        uploaded -= failed
         
         return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded,
                                                         'errors':errors, 'numberOfBadges':numberOfBadges,
-                                                        'failed':failed, 'd':d})
+                                                        'failed':failed})
 
     # User not logged in
     raise Http404
