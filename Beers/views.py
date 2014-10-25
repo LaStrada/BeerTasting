@@ -226,10 +226,10 @@ def uploadRatingsToUntappd(request):
                            }
 
                 # Add venue only if all required data is available
-                if setup.geolng and setup.geolot and setup.venue_id:
+                if setup.geolng and setup.geolat and setup.venue_id:
                     payload['foursquare_id'] = setup.venue_id
                     payload['geolng'] = setup.geolng
-                    payload['geolot'] = setup.geolot
+                    payload['geolat'] = setup.geolat
 
                 # Add rating only if rated
                 if rating.rating >= 0 and rating.rating <= 10:
