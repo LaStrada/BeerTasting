@@ -180,88 +180,92 @@ def unregister_untappd(request):
 
 def uploadRatingsToUntappd(request):
     #check if user is linked to Untappd
-    errors = ''
-    badges = []
-    url = ''
-    numberOfBadges = 0
-    
-    untappd_link = UntappdUser.objects.get(pk = request.user)
-    if untappd_link.untappd == '':
-        errors = 'Not linked to untappd.'
-    else:
-        ratings = BeerRating.objects.filter(user=request.user)
-        uploaded = 0
+    if request.user.is_authenticated():
+        errors = ''
+        badges = []
+        url = ''
+        numberOfBadges = 0
         
-        for rating in ratings:
-            if rating.uploadedToUntappd != True:
-                """
-                access_token (required) - The access_token for authorized calls
-                        (Note: this must be called via a GET parameter:
-                        ?access_token=XXXXXX, everything else is a POST parameter)
-                gmt_offset (required) - The numeric value of hours the user is away from the GMT (Greenwich Mean Time)
-                timezone (required) - The timezone of the user, such as EST or PST.
-                bid (required) - The numeric Beer ID you want to check into.
-                foursquare_id (optional) - The MD5 hash ID of the Venue you want to attach the beer checkin.
-                        This HAS TO BE the MD5 non-numeric hash from the foursquare v2.
-                foursquare (optional) - Default = "off", Pass "on" to checkin on foursquare
-                shout (optional) - The text you would like to include as a comment of the checkin. Max of 140 characters.
-                rating (optional) - The rating score you would like to add for the beer. This can only be 1 to 5
-                        (half ratings are included). You can't rate a beer a 0.
-                """
-                
-                setup = Setup.objects.get(pk=1)
-                untappd = UntappdUser.objects.get(user=request.user)
-                
-                url =  'https://api.untappd.com/v4/checkin/add/?'
-                url += '&access_token=' + untappd.untappd
-                
-                
-                # Create data to post
-                payload = {'gmt_offset': 1,
-                           'timezone': 1,
-                           'bid': rating.beer.untappdId,
-                           #'bid': '510805b345b04ecf5374ff86',
-                           'shout': rating.comment,
-                           #'shout': 'test comment',
-                           }
-
-                # Add venue only if all required data is available
-                if setup.geolng and setup.geolat and setup.venue_id:
-                    payload['foursquare_id'] = setup.venue_id
-                    payload['geolng'] = setup.geolng
-                    payload['geolat'] = setup.geolat
-
-                # Add rating only if rated
-                if rating.rating >= 0 and rating.rating <= 10:
-                    payload['rating'] = (str(float(rating.rating) / 2))
-                
-                # Send data and store the response
-                resp = requests.post(url=url, data=payload)
-                
-                # Convert to json
-                data = json.loads(resp.text)
-                
-                try:
-                    if data['response']['result'] == 'success':
-                        update_rating = BeerRating.objects.get(pk=rating.id)
-                        update_rating.uploadedToUntappd = True
-                        update_rating.save()
-                        uploaded += 1
+        untappd_link = UntappdUser.objects.get(pk = request.user)
+        if untappd_link.untappd == '':
+            errors = 'Not linked to untappd.'
+        else:
+            ratings = BeerRating.objects.filter(user=request.user)
+            uploaded = 0
+            
+            for rating in ratings:
+                if rating.uploadedToUntappd != True:
+                    """
+                    access_token (required) - The access_token for authorized calls
+                            (Note: this must be called via a GET parameter:
+                            ?access_token=XXXXXX, everything else is a POST parameter)
+                    gmt_offset (required) - The numeric value of hours the user is away from the GMT (Greenwich Mean Time)
+                    timezone (required) - The timezone of the user, such as EST or PST.
+                    bid (required) - The numeric Beer ID you want to check into.
+                    foursquare_id (optional) - The MD5 hash ID of the Venue you want to attach the beer checkin.
+                            This HAS TO BE the MD5 non-numeric hash from the foursquare v2.
+                    foursquare (optional) - Default = "off", Pass "on" to checkin on foursquare
+                    shout (optional) - The text you would like to include as a comment of the checkin. Max of 140 characters.
+                    rating (optional) - The rating score you would like to add for the beer. This can only be 1 to 5
+                            (half ratings are included). You can't rate a beer a 0.
+                    """
                     
-                        if data['response']['badges'] > 0:
-                            badges += data['response']['badges']
-                            
-                            for b in data['response']['badges']['items']:
-                                badges.append({'badge_name': b.badge_name,
-                                               'badge_description': b.badge_description,
-                                               'lg': b.lg}
-                                              )
-                                numberOfBadges += 1
-                except:
-                    pass
-    
-    return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded,
+                    setup = Setup.objects.get(pk=1)
+                    untappd = UntappdUser.objects.get(user=request.user)
+                    
+                    url =  'https://api.untappd.com/v4/checkin/add/?'
+                    url += '&access_token=' + untappd.untappd
+                    
+                    
+                    # Create data to post
+                    payload = {'gmt_offset': 1,
+                               'timezone': 1,
+                               'bid': rating.beer.untappdId,
+                               #'bid': '510805b345b04ecf5374ff86',
+                               'shout': rating.comment,
+                               #'shout': 'test comment',
+                               }
+
+                    # Add venue only if all required data is available
+                    if setup.geolng and setup.geolat and setup.venue_id:
+                        payload['foursquare_id'] = setup.venue_id
+                        payload['geolng'] = setup.geolng
+                        payload['geolat'] = setup.geolat
+
+                    # Add rating only if rated
+                    if rating.rating >= 0 and rating.rating <= 10:
+                        payload['rating'] = (str(float(rating.rating) / 2))
+                    
+                    # Send data and store the response
+                    resp = requests.post(url=url, data=payload)
+                    
+                    # Convert to json
+                    data = json.loads(resp.text)
+                    
+                    try:
+                        if data['response']['result'] == 'success':
+                            update_rating = BeerRating.objects.get(pk=rating.id)
+                            update_rating.uploadedToUntappd = True
+                            update_rating.save()
+                            uploaded += 1
+                        
+                            if data['response']['badges'] > 0:
+                                badges += data['response']['badges']
+                                
+                                for b in data['response']['badges']['items']:
+                                    badges.append({'badge_name': b.badge_name,
+                                                   'badge_description': b.badge_description,
+                                                   'lg': b.lg}
+                                                  )
+                                    numberOfBadges += 1
+                    except:
+                        pass
+        
+        return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded,
                                                         'errors':errors, 'numberOfBadges':numberOfBadges})
+
+    # User not logged in
+    raise Http404
 
 
 def profile_view(request):
