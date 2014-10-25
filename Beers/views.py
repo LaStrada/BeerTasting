@@ -182,9 +182,15 @@ def uploadRatingsToUntappd(request):
     #check if user is linked to Untappd
     if request.user.is_authenticated():
         errors = ''
-        badges = []
+        badges = {}
+        failed = 0
         url = ''
+
+        d = {}
+        count = 0
+
         numberOfBadges = 0
+        numberOfBeers = 0
         
         untappd_link = UntappdUser.objects.get(pk = request.user)
         if untappd_link.untappd == '':
@@ -194,6 +200,8 @@ def uploadRatingsToUntappd(request):
             uploaded = 0
             
             for rating in ratings:
+                count += 1
+
                 if rating.uploadedToUntappd != True:
                     """
                     access_token (required) - The access_token for authorized calls
@@ -221,9 +229,7 @@ def uploadRatingsToUntappd(request):
                     payload = {'gmt_offset': 1,
                                'timezone': 1,
                                'bid': rating.beer.untappdId,
-                               #'bid': '510805b345b04ecf5374ff86',
                                'shout': rating.comment,
-                               #'shout': 'test comment',
                                }
 
                     # Add venue only if all required data is available
@@ -241,6 +247,8 @@ def uploadRatingsToUntappd(request):
                     
                     # Convert to json
                     data = json.loads(resp.text)
+
+                    d[count-1] = data
                     
                     try:
                         if data['response']['result'] == 'success':
@@ -248,21 +256,18 @@ def uploadRatingsToUntappd(request):
                             update_rating.uploadedToUntappd = True
                             update_rating.save()
                             uploaded += 1
+
+                            numberOfBadges = data['response']['badges']['count']
+
+                            for x in range (0, numberOfBadges):
+                                badges[x] = data['response']['badges']['items'][x]
                         
-                            if data['response']['badges'] > 0:
-                                badges += data['response']['badges']
-                                
-                                for b in data['response']['badges']['items']:
-                                    badges.append({'badge_name': b.badge_name,
-                                                   'badge_description': b.badge_description,
-                                                   'lg': b.lg}
-                                                  )
-                                    numberOfBadges += 1
                     except:
-                        pass
+                        failed += 1
         
         return render(request, 'user/checkinUntappd.html', {'badges':badges, 'uploaded':uploaded,
-                                                        'errors':errors, 'numberOfBadges':numberOfBadges})
+                                                        'errors':errors, 'numberOfBadges':numberOfBadges,
+                                                        'failed':failed, 'd':d})
 
     # User not logged in
     raise Http404
@@ -318,11 +323,14 @@ def profile_view(request):
         
         return render(request, 'user/profile.html', {'finished':setup.finished, 'untappd':untappd,
                                                     'beers':beers, 'search':search, 'CLIENT_ID':CLIENT_ID,
-                                                    'venue_id':setup.venue_id})
+                                                    'setup':setup})
     raise Http404
 
 
 def register_foursquare(request):
+    errors = ''
+    e = []
+
     # Only admins can change this
     #try:
     if request.user.is_superuser:
@@ -352,6 +360,19 @@ def register_foursquare(request):
                     # json error / wrong request
                     # todo: change to custom error message
                     raise Http404
+
+                if isinstance(request.POST['geolat'], float):
+                    setup.geolng = request.POST['geolat']
+                else:
+                    e['geolat'] = True
+
+                if isinstance(request.POST['geolng'], float):
+                    setup.geolng = request.POST['geolng']
+                    e['geolng'] = True
+
+                if e['geolng'] or e['geolat']:
+                    errors += "Float value is required."
+
             setup.save()
 #    except:
 #        raise Http404
