@@ -57,7 +57,7 @@ class BeerRating(models.Model):
     user = models.ForeignKey(User)
     beer = models.ForeignKey(Beer, related_name='ratings')
     rating = models.IntegerField(validators=[validate_rating])
-    comment = models.CharField(max_length=500, blank=True)
+    comment = models.CharField(max_length=140, blank=True)
     uploadedToUntappd = models.BooleanField(default=False)
     
     def __unicode__(self):
