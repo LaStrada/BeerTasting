@@ -17,6 +17,16 @@ urlpatterns = patterns('',
     url(r'^login/', 'Beers.views.login_view', name='login_view'),
     url(r'^login_failed/$', 'Beers.views.login_failed_view', name='login_failed_view'),
     url(r'^logout/', 'Beers.views.logout_view', name='logout_view'),
+    
+    #url(r'^profile/registerUntappd/?code=(\w+)$', 'Beers.views.register_untappd', name='register_untappd'),
+    
+    url(r'^profile/checkingBeers/$', 'Beers.views.uploadRatingsToUntappd', name='uploadRatingsToUntappd'),
+
+    url(r'^profile/event_finished/$', 'Beers.views.event_finished', name='event_finished'),
+    url(r'^profile/register_foursquare/$', 'Beers.views.register_foursquare', name='register_foursquare'),
+    
+    url(r'^profile/registerUntappd/$', 'Beers.views.register_untappd', name='register_untappd'),
+    url(r'^profile/unregisterUntappd/$', 'Beers.views.unregister_untappd', name='unregister_untappd'),
     url(r'^profile/$', 'Beers.views.profile_view', name='profile_view'),
     
     url(r'^rate_beer/(\d+)$', 'Beers.views.rate_beer', name='rate_beer'),

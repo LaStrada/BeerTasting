@@ -13,7 +13,12 @@
 					
 					{% if finished %}
 					<p>
+						{% if beer.beer.brewery and beer.beer.name %}
 						{{beer.beer.brewery}} - <i>{{beer.beer.name}}</i>
+						{% else %}
+						{{beername.name}} - <i>{{beername.brewery}}</i>
+						{% endif %}
+
 					</p>
 					{% endif %}
 					

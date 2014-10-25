@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% load beertasting_extra %}
+
+{% block content %}
+	<div class="row">
+		<div class=".col-lg-12">
+			<h2>Profile</h2>
+
+			<h4>Untappd</h4>
+			{% if untappd %}
+			<p>
+				<a href="{% url 'unregister_untappd' %}">Unlink Untappd.</a>
+				{% if finished %}
+				<br />
+				<a href="{% url 'uploadRatingsToUntappd' %}">Check-in beers.</a>
+				{% endif %}
+			</p>
+			
+			{% else %}
+			<p>
+				<a href="https://untappd.com/oauth/authenticate/?client_id={{ CLIENT_ID }}&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/">Link to Untappd.</a>
+			</p>
+			{% endif %}
+			
+			{% if user.is_superuser %}
+			<h3>Admin</h3>
+
+			<p>
+				<form action="{% url 'register_foursquare' %}" method="post">
+					{% csrf_token %}
+					Foursquare id:<br />
+					<input type="textbox" name="foursquare_id" value="{{ venue_id }}"></input>
+					<input type="submit" value="Save"></input>
+				</form>
+			</p>
+
+			<p>
+				<form action="{% url 'event_finished' %}" method="post">
+					{% csrf_token %}
+					<input type="checkbox" onclick="this.form.submit();" name="finished" value="finished" {% if finished %}checked{% endif %}>Finished? <i>(Show beer names and show statistics)</i></input>
+				</form>
+			</p>
+
+			<h4>Add beers</h4>
+			<p>
+				Search for new Beer:<br />
+			</p>
+			<form action="" method="post">
+				{% csrf_token %}
+				<input type="text" name="search" value="{{ search }}"></input>
+				<input type="submit" value="Search"></input>
+			</form>
+			{% if beers %}
+			<table>
+				<tr>
+					<th>Label</th>
+					<th>Brewery (country)</th>
+					<th>Name</th>
+					<th>ABV</th>
+					<th>&nbsp;</th>
+				</tr>
+				{% for beer in beers %}
+				<form action="" method="post">
+				{% csrf_token %}
+				<tr>
+					<td>
+						<img src="{{ beer.beer.beer_label }}" />
+					</td>
+					<td>
+						{{ beer.brewery.brewery_name }} <i>({{ beer.brewery.country_name }})</i>
+					</td>
+					<td>
+						{{ beer.beer.beer_name }}
+					</td>
+					<td>
+						{{ beer.beer.beer_abv }}
+					</td>
+					<td>
+						<input type="submit" name="{{ beer.beer.bid }}" value="Add beer" />
+						<input type="hidden" name="bid" value="{{ beer.beer.bid }}" />
+						<input type="hidden" name="name" value="{{ beer.beer.beer_name }}" />
+						<input type="hidden" name="brewery" value="{{ beer.brewery.brewery_name }}" />
+						<input type="hidden" name="label" value="{{ beer.beer.beer_label }}" />
+						<input type="hidden" name="abv" value="{{ beer.beer.beer_abv }}" />
+						<input type="hidden" name="style" value="{{ beer.beer.beer_style }}" />
+						<input type="hidden" name="country" value="{{ beer.brewery.country_name }}" />
+					</td>
+				</tr>
+				</form>
+				{% endfor %}
+			</table>
+			{% endif %}
+			{% endif %}
+			
+			<table class="table" data-provides="rowlink">
+				{% if events %}
+				{% for event in events %}
+				
+				<tr>
+					<td>
+						<a href="{% url 'change_event' forloop.counter %}">
+						{{event.id}}
+						</a>
+					</td>
+				</tr>
+				{% endfor %}
+				{% endif %}
+			</table>
+		</div>
+	</div>
+{% endblock %}
