@@ -8,8 +8,19 @@
 			<h2>Profile</h2>
 			
 			<p>
-				You checked in {{ uploaded }} beers{% if badges %} and got {{ numberOfBadges }} badges{% endif %}.
+				You checked in {{ uploaded }} beer(s){% if badges %} and got {{ numberOfBadges }} badges{% endif %}.
 			</p>
+
+			{% if errors %}
+			<h4>Errors</h4>
+			<p>
+				<ul>
+					{% for e in errors %}
+					<li>{{ e }}</li>
+					{% endfor %}
+				</ul>
+			</p>
+			{% endif %}
 
 			{% if failed %}
 			<p>{{ failed }} beers was not checked in. Try again later.</p>

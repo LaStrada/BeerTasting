@@ -193,9 +193,10 @@ def unregister_untappd(request):
 def uploadRatingsToUntappd(request):
     #check if user is linked to Untappd
     if request.user.is_authenticated():
-        errors = ''
+        errors = []
         badges = []
         failed = 0
+        uploaded = 0
         url = ''
 
         numberOfBadges = 0
@@ -203,10 +204,9 @@ def uploadRatingsToUntappd(request):
         
         untappd_link = UntappdUser.objects.get(pk = request.user)
         if untappd_link.untappd == '':
-            errors = 'Not linked to untappd.'
+            errors.append('Not linked to untappd.')
         else:
             ratings = BeerRating.objects.filter(user=request.user)
-            uploaded = 0
             
             for rating in ratings:
                 if rating.uploadedToUntappd != True:
@@ -255,22 +255,32 @@ def uploadRatingsToUntappd(request):
                     # Convert to json
                     data = json.loads(resp.text)
                     
-                    #try:
-                    if data['response']['result'] == 'success':
-                        update_rating = BeerRating.objects.get(pk=rating.id)
-                        update_rating.uploadedToUntappd = True
-                        update_rating.save()
-                        uploaded += 1
+                    try:
+                        if data['meta']['code'] == 500:
+                            failed += 1
+                            # Invalid token, unlink user
+                            if data['meta']['error_type'] == 'invalid_token':
+                                untappd_link = UntappdUser.objects.get(pk = request.user)
+                                untappd_link.untappd = ''
+                                untappd_link.save()
+                                errors.append(data['meta']['error_detail'])
+                                break
 
-                        numberOfBadges += data['response']['badges']['count']
+                        elif data['response']['result'] == 'success':
+                            update_rating = BeerRating.objects.get(pk=rating.id)
+                            update_rating.uploadedToUntappd = True
+                            update_rating.save()
+                            uploaded += 1
 
-                        for x in range (0, numberOfBadges):
-                            badges.append({'name':data['response']['badges']['items'][x]['badge_name'],
-                                        'description':data['response']['badges']['items'][x]['badge_description'],
-                                        'img':data['response']['badges']['items'][x]['badge_image']['md']})
+                            numberOfBadges += data['response']['badges']['count']
+
+                            for x in range (0, numberOfBadges):
+                                badges.append({'name':data['response']['badges']['items'][x]['badge_name'],
+                                            'description':data['response']['badges']['items'][x]['badge_description'],
+                                            'img':data['response']['badges']['items'][x]['badge_image']['md']})
                         
-                    #except:
-                    #    failed += 1
+                    except:
+                        failed += 1
 
         uploaded -= failed
         
