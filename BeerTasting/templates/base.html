@@ -46,9 +46,11 @@
 						<li{% navactive request 'index' %}>
 							<a href="{% url 'index' %}">Home</a>
 						</li>
+						{% if user.is_authenticated %}
 						<li{% navactive request 'beers' %}>
 							<a href="{% url 'beers' %}">Beers</a>
 						</li>
+						{% endif %}
 						<li{% navactive request 'stats' %}>
 							<a href="{% url 'stats' %}">Statistics</a>
 						</li>
