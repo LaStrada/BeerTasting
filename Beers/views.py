@@ -54,7 +54,7 @@ def stats(request):
         
             return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
         else:
-            return HttpResponseRedirect(reverse('index'))
+            return HttpResponseRedirect(reverse('beers'))
     except:
         #todo: add custom error message
         return HttpResponseRedirect(reverse('index'))
@@ -92,14 +92,14 @@ def rate_beer(request, beer_id):
                 beer.comment = request.POST['comment']
                 beer.rating = int(request.POST['star'])
                 beer.save()
-                return HttpResponseRedirect(reverse('index'))
+                return HttpResponseRedirect(reverse('beers'))
                 
             #Insert and return to index
             elif beers.count() == 0:
                 new_rating = BeerRating(user=request.user, beer_id=b_id, rating=request.POST['star'],
                                         comment=request.POST['comment'])
                 new_rating.save()
-                return HttpResponseRedirect(reverse('index'))
+                return HttpResponseRedirect(reverse('beers'))
                 
             #Too many posts
             else:
@@ -138,11 +138,12 @@ def login_view(request):
         password = request.POST['password']
         user = authenticate(username=username, password=password)
         
+        # Login successful
         if user is not None:
             if user.is_active:
                 login(request, user)
                 
-                return HttpResponseRedirect(reverse('index'))
+                return HttpResponseRedirect(reverse('beers'))
 
             else:
                 # Return a 'disabled account' error message
@@ -337,7 +338,7 @@ def profile_view(request):
                                 untappdId=request.POST['bid'])
                 new_beer.save()
 
-                return HttpResponseRedirect(reverse('index'))
+                return HttpResponseRedirect(reverse('beers'))
                 
         
         return render(request, 'user/profile.html', {'finished':setup.finished, 'untappd':untappd,
