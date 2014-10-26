@@ -280,7 +280,7 @@ def uploadRatingsToUntappd(request):
                                             'img':data['response']['badges']['items'][x]['badge_image']['md']})
                         
                     except:
-                        failed += 1
+                        pass
 
         uploaded -= failed
         
