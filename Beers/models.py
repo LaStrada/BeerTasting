@@ -7,8 +7,9 @@ from django.db.models import Avg
 class UntappdUser(models.Model):
     user = models.ForeignKey(User, primary_key=True)
     untappd = models.CharField(max_length=100, blank=True)
-    
-    #todo: only one instance per user!
+
+    def __unicode__(self):
+        return unicode(self.user.username)
 
 
 def validate_only_one_instance(obj):
