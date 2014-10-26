@@ -152,7 +152,7 @@ def login_view(request):
             # Return an 'invalid login' error message.
             return HttpResponseRedirect(reverse('login_failed_view'))
     except:
-        raise Http404
+        return HttpResponseRedirect(reverse('index'))
 
 
 def register_untappd(request):
@@ -344,6 +344,7 @@ def profile_view(request):
         return render(request, 'user/profile.html', {'finished':setup.finished, 'untappd':untappd,
                                                     'beers':beers, 'search':search, 'CLIENT_ID':CLIENT_ID,
                                                     'setup':setup})
+    #User not logged in
     raise Http404
 
 
@@ -420,4 +421,5 @@ def logout_view(request):
 
 
 def login_failed_view(request):
-    return render(request, 'index_not_logged_in.html')
+    setup = Setup.objects.get(pk=1)
+    return render(request, 'index_not_logged_in.html', {'setup':setup})
