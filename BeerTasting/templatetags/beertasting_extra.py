@@ -71,7 +71,7 @@ def print_stars_form(rating):
     
     for x in range(0,10):
         if (x+1) == rating:
-            string += '<input type="radio" name="star" id="%d" value="%d"checked />&nbsp;' % (x, x+1)
+            string += '<input type="radio" name="star" id="%d" value="%d" checked />&nbsp;' % (x, x+1)
             string += '<label for="%d"><span class="star glyphicon glyphicon-star"></span></label>' % x
         else:
             string += '<input type="radio" name="star" id="%d" value="%d" />&nbsp;' % (x, x+1)
