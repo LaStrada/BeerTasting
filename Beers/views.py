@@ -59,6 +59,54 @@ def stats(request):
         #todo: add custom error message
         return HttpResponseRedirect(reverse('index'))
 
+
+def graph(request, beer_id):
+    #try:
+    setup = Setup.objects.get(id=1)
+    
+    if(setup.finished == True):
+        try:
+            beer = Beer.objects.get(pk=beer_id)
+        except:
+            #Beer does not excist
+            raise Http404
+        
+        ratings = BeerRating.objects.raw('''SELECT id, beer_id, COUNT(rating) AS number_of_ratings, rating
+                                        FROM Beers_beerrating
+                                        GROUP BY beer_id, rating
+                                        ORDER BY beer_id
+                                        ''')
+
+        r = [0,0,0,0,0,0,0,0,0,0]
+
+        for x in ratings:
+            if int(x.beer_id) == int(beer_id):
+                r[x.rating-1] = x.number_of_ratings
+
+
+        #todo: Only show statistics if all the beers have been rated
+        #add custom error message
+
+        
+
+        # r = []
+        # for x in beer:
+        #     r.append([0,0,0,0,0,0,0,0,0,0])
+
+        # all_ratings = BeerRating.objects.all()
+        # i = 0
+        # for x in all_ratings:
+        #     r[x.beer.id-1][x.rating-1] += 1
+        #     i += 1
+            
+    
+        return render(request, 'stats_graph.html', {'beer':beer, 'r':r})
+    else:
+        return HttpResponseRedirect(reverse('beers'))
+#except:
+    #todo: add custom error message
+    return HttpResponseRedirect(reverse('index'))
+
 def rate_beer(request, beer_id):
     errors = ''
     beername = []

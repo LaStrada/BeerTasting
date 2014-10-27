@@ -16,7 +16,7 @@
 							<th>Name</th>
 							<th>Brewery</th>
 							<th class="hidden-xs">Style</th>
-							<th class="hidden-s">Alcohol</th>
+							<th class="hidden-xs">Alcohol</th>
 						</tr>
 						{% if beers %}
 						{% for beer in beers %}
@@ -31,13 +31,15 @@
 							<td>{{ beer.name }}</td>
 							<td>{{ beer.brewery }}</td>
 							<td class="hidden-xs">{{ beer.style }}</td>
-							<td class="hidden-s">{{ beer.alcohol }}</td>
+							<td class="hidden-xs">{{ beer.alcohol }}</td>
 						</tr>
 						<tr>
 							<td colspan="4" class="{{ forloop.counter|every_other_row }}">
 								{% autoescape off %}
 									{{ ratings|print_stars:beer.id }} - {{ ratings|return_with_decimal:beer.id }}
 								{% endautoescape %}
+								</p>
+
 							</td>
 						</tr>
 						{% endfor %}

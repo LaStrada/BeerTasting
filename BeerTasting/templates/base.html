@@ -11,6 +11,9 @@
 		<link rel="shortcut icon" href="{% static 'bootstrap/assets/ico/favicon.png' %}">
 
 		<title>{% block title %}BeerTasting{% endblock %}</title>
+		<!-- ChartJs -->
+		<script src="{% static 'Chart.js' %}"></script>
+
 
 		<!-- Bootstrap core CSS -->
 		<link href="{% static 'bootstrap/dist/css/bootstrap.css' %}" rel="stylesheet">
@@ -125,5 +128,13 @@
 		<script src="{% static 'bootstrap-rowlink.min.js' %}"></script>
 		
 		<script src="{% static 'form.js' %}"></script>
+
+		<script>
+		$(function () { $('.popover-show').popover('show');});
+		$(function () { $('.popover-hide').popover('hide');});
+		$(function () { $('.popover-destroy').popover('destroy');});
+		$(function () { $('.popover-toggle').popover('toggle');});
+		$(function () { $(".popover-options a").popover({html : true });});
+		</script>
 	</body>
 </html>
