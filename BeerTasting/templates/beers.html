@@ -11,9 +11,6 @@
 			<table class="table" data-provides="rowlink">
 				<tr class="border">
 					<th>#</th>
-					{% if setup.finished %}
-					<th>Beer</th>
-					{% endif %}
 					<th>Rating</th>
 				</tr>
 				{% if beers %}
@@ -27,14 +24,12 @@
 					</td>
 					{% if setup.finished %}
 					<td>
-						{{beer.brewery}} - <i>{{beer.name}}</i>
-					</td>
-					{% endif %}
-					<td>
+						{{beer.brewery}} - <i>{{beer.name}}</i><br />
 						{% autoescape off %}
 							{{ ratings|print_stars_with_comments:beer.id }}
 						{% endautoescape %}
 					</td>
+					{% endif %}
 				</tr>
 				{% endfor %}
 				{% endif %}

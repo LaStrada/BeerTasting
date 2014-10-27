@@ -11,8 +11,8 @@
 					<h2>Beers</h2>
 					<table class="table">
 						<tr class="border">
-							<th class="hidden-s">#</th>
-							<th class="hidden-m">Label</th>
+							<th class="hidden-xs">#</th>
+							<th class="hidden-m" colspan="2">Label</th>
 							<th>Name</th>
 							<th>Brewery</th>
 							<th class="hidden-xs">Style</th>
@@ -22,12 +22,17 @@
 						{% for beer in beers %}
 						
 						<tr class="{{ forloop.counter|every_other_row }}">
-							<td rowspan="2" class="hidden-s">
+							<td rowspan="2" class="hidden-xs">
 								{{ beer.id }}
 							</td>
-							<td rowspan="2">
-								<img src="{{ beer.label }}" width="100" height="100" />
+
+							<td rowspan="2" class="visible-lg visible-md visible-sm">
+								<img src="{{ beer.label }}" width="100" height="100" alt="" />
 							</td>
+							<td rowspan="2" class="visible-xs">
+								<img src="{{ beer.label }}" width="60" height="60" alt="" />
+							</td>
+
 							<td>{{ beer.name }}</td>
 							<td>{{ beer.brewery }}</td>
 							<td class="hidden-xs">{{ beer.style }}</td>
@@ -36,10 +41,10 @@
 						<tr>
 							<td colspan="4" class="{{ forloop.counter|every_other_row }}">
 								{% autoescape off %}
-									{{ ratings|print_stars:beer.id }} - {{ ratings|return_with_decimal:beer.id }}
+									Rating: {{ ratings|return_with_decimal:beer.id }}<br />
+									{{ ratings|print_stars:beer.id }}<br />
 								{% endautoescape %}
-								</p>
-
+								<a href="{% url 'graph' beer.id %}">Show graph</a>
 							</td>
 						</tr>
 						{% endfor %}
