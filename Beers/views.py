@@ -35,29 +35,39 @@ def beers(request):
     # if user is not logged in, redirect to index
     return HttpResponseRedirect(reverse('index'))
 
-def stats(request):
+def stats(request, order_by='id', desc=''):
     errors = []
 
-    try:
-        setup = Setup.objects.get(id=1)
-        
-        if(setup.finished == True):
-            beers = Beer.objects.all()
-            
-            ratings = BeerRating.objects.raw('''SELECT id, beer_id, ROUND(AVG(CAST(rating AS FLOAT)), 2) AS rating
-                                            FROM Beers_beerrating
-                                            GROUP BY beer_id
-                                            ''')
+    #try:
+    setup = Setup.objects.get(id=1)
+    
+    if(setup.finished == True):
+        order_by_values = ['id', 'name', 'brewery', 'style', 'alcohol']
+        if order_by not in order_by_values:
+            raise Http404
 
-            #todo: Only show statistics if all the beers have been rated
-            #add custom error message
-        
-            return render(request, 'stats.html', {'beers':beers, 'ratings':ratings})
+        beers = Beer.objects.all().order_by(order_by)
+
+        if desc == 'desc':
+            beers = Beer.objects.all().order_by(order_by).reverse()
         else:
-            return HttpResponseRedirect(reverse('beers'))
-    except:
-        #todo: add custom error message
-        return HttpResponseRedirect(reverse('index'))
+            beers = Beer.objects.all().order_by(order_by)
+            desc = ''
+        
+        ratings = BeerRating.objects.raw('''SELECT id, beer_id, ROUND(AVG(CAST(rating AS FLOAT)), 2) AS rating
+                                        FROM Beers_beerrating
+                                        GROUP BY beer_id
+                                        ''')
+
+        #todo: Only show statistics if all the beers have been rated
+        #add custom error message
+    
+        return render(request, 'stats.html', {'beers':beers, 'ratings':ratings, 'order_by':order_by, 'desc':desc })
+    else:
+        return HttpResponseRedirect(reverse('beers'))
+    # except:
+    #     #todo: add custom error message
+    #     return HttpResponseRedirect(reverse('index'))
 
 
 def graph(request, beer_id):
