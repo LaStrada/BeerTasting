@@ -22,17 +22,19 @@
 					</p>
 					{% endif %}
 					
-					<form action="" method="post">
+					<form method="post">
 						{% csrf_token %}
 						{% autoescape off %}
 							{{ beer.rating|print_stars_form }}
 						{% endautoescape %}
-						<textarea name="comment" maxlength="500" rows="5" style="width:90%">{% if beer.comment %}{{ beer.comment }}{% endif %}</textarea>
+						<textarea name="comment" maxlength="500" rows="5" style="width:90%">
+							{% if beer.comment %}{{ beer.comment }}{% endif %}
+						</textarea>
 						<br />
 						{% if rated_before %}
-						<input type="submit" value="Update rating"></input>
+						<input type="submit" value="Update rating" />
 						{% else %}
-						<input type="submit" value="Rate"></input>
+						<input type="submit" value="Rate" />
 						{% endif %}
 					</form>
 				</div>

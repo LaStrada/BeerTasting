@@ -19,41 +19,41 @@
 			
 			{% else %}
 			<p>
-				<a href="https://untappd.com/oauth/authenticate/?client_id={{ CLIENT_ID }}&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/">Link to Untappd.</a>
+				<a href="https://untappd.com/oauth/authenticate/?client_id={{ CLIENT_ID }}&amp;response_type=code&amp;redirect_url=http://127.0.0.1:8000/profile/registerUntappd/">Link to Untappd.</a>
 			</p>
 			{% endif %}
 			
 			{% if user.is_superuser %}
 			<h3>Admin</h3>
 
-			<p>
-				<form action="{% url 'register_foursquare' %}" method="post">
-					{% csrf_token %}
-					Foursquare id:<br />
-					<input type="textbox" name="foursquare_id" value="{{ setup.venue_id }}"></input><br />
-					Latitude:<br />
-					<input type="textbox" name="geolat" value="{{ setup.geolat }}"></input><br />
-					Longitude:<br />
-					<input type="textbox" name="geolng" value="{{ setup.geolng }}"></input><br />
-					<input type="submit" value="Save"></input>
-				</form>
-			</p>
+			<form action="{% url 'register_foursquare' %}" method="post">
+				{% csrf_token %}
+				Foursquare id:<br />
+				<input type="text" name="foursquare_id" value="{{ setup.venue_id }}" /><br />
+				Latitude:<br />
+				<input type="text" name="geolat" value="{{ setup.geolat }}" /><br />
+				Longitude:<br />
+				<input type="text" name="geolng" value="{{ setup.geolng }}" /><br />
+				<input type="submit" value="Save" />
+			</form>
 
-			<p>
-				<form action="{% url 'event_finished' %}" method="post">
-					{% csrf_token %}
-					<input type="checkbox" onclick="this.form.submit();" name="finished" value="finished" {% if finished %}checked{% endif %}>Finished? <i>(Show beer names and show statistics)</i></input>
-				</form>
-			</p>
+			<form action="{% url 'event_finished' %}" method="post">
+				{% csrf_token %}
+				<label>
+					<input type="checkbox" onclick="this.form.submit();"
+						name="finished" value="finished"{% if finished %} checked{% endif %}>
+						Finished? <i>(Show beer names and show statistics)</i>
+				</label>
+			</form>
 
 			<h4>Add beers</h4>
 			<p>
 				Search for new Beer:<br />
 			</p>
-			<form action="" method="post">
+			<form method="post">
 				{% csrf_token %}
-				<input type="text" name="search" value="{{ search }}"></input>
-				<input type="submit" value="Search"></input>
+				<input type="text" name="search" value="{{ search }}" />
+				<input type="submit" value="Search" />
 			</form>
 			{% if beers %}
 			<table>
@@ -97,8 +97,8 @@
 			{% endif %}
 			{% endif %}
 			
+			{% if events %}
 			<table class="table" data-provides="rowlink">
-				{% if events %}
 				{% for event in events %}
 				
 				<tr>
@@ -109,8 +109,8 @@
 					</td>
 				</tr>
 				{% endfor %}
-				{% endif %}
 			</table>
+			{% endif %}
 		</div>
 	</div>
 {% endblock %}
