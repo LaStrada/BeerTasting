@@ -11,12 +11,12 @@
 					<h2>Beers</h2>
 					<table class="table">
 						<tr class="border">
-							<th class="hidden-xs">#</th>
-							<th class="hidden-m" colspan="2">Label</th>
-							<th>Name</th>
-							<th>Brewery</th>
-							<th class="hidden-xs">Style</th>
-							<th class="hidden-xs">Alcohol</th>
+							<th class="hidden-s"><a href="{% url 'stats' %}id/{% if order_by == 'id' and not desc %}desc/{% endif %}">#</a></th>
+							<th class="hidden-m">Label</th>
+							<th><a href="{% url 'stats' %}name/{% if order_by == 'name' and not desc %}desc/{% endif %}">Name</a></th>
+							<th><a href="{% url 'stats' %}brewery/{% if order_by == 'brewery' and not desc %}desc/{% endif %}">Brewery</a></th>
+							<th class="hidden-xs"><a href="{% url 'stats' %}style/{% if order_by == 'style' and not desc %}desc/{% endif %}">Style</a></th>
+							<th class="hidden-xs"><a href="{% url 'stats' %}alcohol/{% if order_by == 'alcohol' and not desc %}desc/{% endif %}">Alcohol</a></th>
 						</tr>
 						{% if beers %}
 						{% for beer in beers %}

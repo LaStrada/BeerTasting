@@ -33,8 +33,11 @@ urlpatterns = patterns('',
     
     url(r'^rate_beer/(\d+)$', 'Beers.views.rate_beer', name='rate_beer'),
     
-    url(r'^stats/$', 'Beers.views.stats', name='stats'),
     url(r'^stats/graph/(\d+)$', 'Beers.views.graph', name='graph'),
+    url(r'^stats/$', 'Beers.views.stats', name='stats'),
+
+    url(r'^stats/(?P<order_by>\w+)/$', 'Beers.views.stats', name='stats'),
+    url(r'^stats/(?P<order_by>\w+)/(?P<desc>\w+)/$', 'Beers.views.stats', name='stats'),
 )
 
 urlpatterns += staticfiles_urlpatterns()
