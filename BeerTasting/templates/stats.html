@@ -11,8 +11,9 @@
 					<h2>Beers</h2>
 					<table class="table">
 						<tr class="border">
-							<th class="hidden-s"><a href="{% url 'stats' %}id/{% if order_by == 'id' and not desc %}desc/{% endif %}">#</a></th>
-							<th class="hidden-m">Label</th>
+							<th class="visible-lg visible-md visible-sm"><a href="{% url 'stats' %}id/{% if order_by == 'id' and not desc %}desc/{% endif %}">#</a></th>
+							<th class="visible-lg visible-md">Label</th>
+							<th class="visible-sm visible-xs">Label</th>
 							<th><a href="{% url 'stats' %}name/{% if order_by == 'name' and not desc %}desc/{% endif %}">Name</a></th>
 							<th><a href="{% url 'stats' %}brewery/{% if order_by == 'brewery' and not desc %}desc/{% endif %}">Brewery</a></th>
 							<th class="hidden-xs"><a href="{% url 'stats' %}style/{% if order_by == 'style' and not desc %}desc/{% endif %}">Style</a></th>
@@ -22,14 +23,14 @@
 						{% for beer in beers %}
 						
 						<tr class="{{ forloop.counter|every_other_row }}">
-							<td rowspan="2" class="hidden-xs">
+							<td rowspan="2" class="visible-lg visible-md visible-sm">
 								{{ beer.id }}
 							</td>
 
-							<td rowspan="2" class="visible-lg visible-md visible-sm">
+							<td rowspan="2" class="visible-lg visible-md">
 								<img src="{{ beer.label }}" width="100" height="100" alt="" />
 							</td>
-							<td rowspan="2" class="visible-xs">
+							<td rowspan="2" class="visible-sm visible-xs">
 								<img src="{{ beer.label }}" width="60" height="60" alt="" />
 							</td>
 
