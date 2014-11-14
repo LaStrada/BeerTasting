@@ -12,6 +12,7 @@
 				<tr class="border">
 					<th>#</th>
 					<th>Rating</th>
+					{% if untappd and setup.finished %}<th>Untappd</th>{% endif %}
 				</tr>
 				{% if beers %}
 				{% for beer in beers %}
@@ -22,11 +23,20 @@
 						{{ beer.id }}
 						</a>
 					</td>
-					{% if setup.finished %}
+					
 					<td>
+						{% if setup.finished %}
 						{{beer.brewery}} - <i>{{beer.name}}</i><br />
+						{% endif %}
+						
 						{% autoescape off %}
 							{{ ratings|print_stars_with_comments:beer.id }}
+						{% endautoescape %}
+					</td>
+					{% if untappd and setup.finished %}
+					<td>
+						{% autoescape off %}
+							{{ ratings|untappd_ok:beer.id }}
 						{% endautoescape %}
 					</td>
 					{% endif %}

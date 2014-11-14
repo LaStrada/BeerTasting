@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate
 from django.contrib.auth.views import login, logout
 from django.shortcuts import render, redirect, render_to_response
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseForbidden                 
 from django.db import connection
 from django.conf import settings
 
@@ -22,17 +22,24 @@ def json2obj(data):
     return json.loads(data, object_hook=_json_object_hook)
 
 def index(request):
-    setup = Setup.objects.get(pk=1)
-    return render(request, 'index.html', {'setup':setup})
+    try:
+        setup = Setup.objects.get(pk=1)
+        return render(request, 'index.html', {'setup':setup})
+    except Exception, e:
+        return HttpResponseForbidden()
 
 def beers(request):
     if request.user.is_authenticated():
         setup = Setup.objects.get(pk=1)
         beers = Beer.objects.all()
+        if UntappdUser.objects.get(pk=1).untappd == '':
+            untappd = False
+        else:
+            untappd = True
         ratings = BeerRating.objects.filter(user_id=request.user.id)
-        return render(request, 'beers.html', {'setup':setup, 'beers':beers, 'ratings':ratings})
+        return render(request, 'beers.html', {'setup':setup, 'beers':beers, 'ratings':ratings, 'untappd':untappd})
 
-    # if user is not logged in, redirect to index
+    # user is not logged in, redirect to index
     return HttpResponseRedirect(reverse('index'))
 
 def stats(request, order_by='id', desc=''):
@@ -119,6 +126,7 @@ def graph(request, beer_id):
 
 def rate_beer(request, beer_id):
     errors = ''
+    beer = []
     beername = []
     c = {}
     c.update(csrf(request))
@@ -134,9 +142,11 @@ def rate_beer(request, beer_id):
     beer = Beer.objects.filter(pk=beer_id)
     if beer.count() != 1:
         raise Http404
+    else:
+        beername = beer[0].name
+        brewery = beer[0].brewery
     
     beers = BeerRating.objects.filter(user=request.user.id, beer=b_id)
-    setup = Setup.objects.get(pk=1)
     
     #Validate and store data
     if request.method == 'POST':
@@ -166,15 +176,20 @@ def rate_beer(request, beer_id):
                 
         except:
             errors = "Not a valid rating value..."
+            beer.comment = request.POST['comment']
     
     
-    try:
-        beer = BeerRating.objects.get(user=request.user.id, beer=b_id)
-    except:
-        if setup.finished == True:
-            beername = Beer.objects.get(pk=b_id)
-        else:
-            beer = ''
+    else:
+        try:
+            beer = BeerRating.objects.get(user=request.user.id, beer=b_id)
+        except:
+            try:
+                beer = Beer.objects.get(pk=b_id)
+            except:
+                raise Http404
+
+    if errors:
+        beer.comment = request.POST['comment']
     
     #Change rate button if user has rated this beer before
     if beers.count() > 0:
@@ -184,7 +199,7 @@ def rate_beer(request, beer_id):
     
     return render(request, 'rate_beer.html', {'beer':beer, 'b_id':b_id, 'errors':errors,
                                               'finished':setup.finished, 'rated_before':rated_before,
-                                              'beername':beername})
+                                              'beername':beername, 'brewery':brewery})
 
 
 def login_view(request):
@@ -408,7 +423,7 @@ def profile_view(request):
 
 def register_foursquare(request):
     errors = ''
-    e = []
+    e = {'geolat':False, 'geolng':False}
 
     # Only admins can change this
     #try:
@@ -449,7 +464,7 @@ def register_foursquare(request):
                     setup.geolng = request.POST['geolng']
                     e['geolng'] = True
 
-                if e['geolng'] or e['geolat']:
+                if e['geolng'] == True or e['geolat'] == True:
                     errors += "Float value is required."
 
             setup.save()

@@ -13,11 +13,7 @@
 					
 					{% if finished %}
 					<p>
-						{% if beer.beer.brewery and beer.beer.name %}
-						{{beer.beer.brewery}} - <i>{{beer.beer.name}}</i>
-						{% else %}
-						{{beername.name}} - <i>{{beername.brewery}}</i>
-						{% endif %}
+						{{ brewery }} - <i>{{ beername }}</i>
 
 					</p>
 					{% endif %}
@@ -27,9 +23,7 @@
 						{% autoescape off %}
 							{{ beer.rating|print_stars_form }}
 						{% endautoescape %}
-						<textarea name="comment" maxlength="500" rows="5" style="width:90%">
-							{% if beer.comment %}{{ beer.comment }}{% endif %}
-						</textarea>
+						<textarea name="comment" maxlength="500" rows="5" style="width:90%">{% if beer.comment %}{{ beer.comment }}{% endif %}</textarea>
 						<br />
 						{% if rated_before %}
 						<input type="submit" value="Update rating" />
