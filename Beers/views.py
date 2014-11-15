@@ -234,7 +234,7 @@ def register_untappd(request):
         # verify code
         url =  'https://untappd.com/oauth/authorize/?client_id='
         url += settings.CLIENT_ID + '&client_secret=' + settings.CLIENT_SECRET
-        url += '&response_type=code&redirect_url=http://127.0.0.1:8000/profile/registerUntappd/&code=' + request.GET['code']
+        url += '&response_type=code&redirect_url=http://unicorn.local:8083/profile/registerUntappd/&code=' + request.GET['code']
         
         resp = requests.get(url=url)
         
