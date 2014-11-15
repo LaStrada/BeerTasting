@@ -32,7 +32,7 @@ def beers(request):
     if request.user.is_authenticated():
         setup = Setup.objects.get(pk=1)
         beers = Beer.objects.all()
-        if UntappdUser.objects.get(pk=1).untappd == '':
+        if UntappdUser.objects.get(pk=1).untappd == None:
             untappd = False
         else:
             untappd = True
