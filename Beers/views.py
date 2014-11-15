@@ -32,10 +32,13 @@ def beers(request):
     if request.user.is_authenticated():
         setup = Setup.objects.get(pk=1)
         beers = Beer.objects.all()
-        if UntappdUser.objects.get(pk=1).untappd == None:
+        try:
+            if UntappdUser.objects.get(pk=1).untappd == None:
+                untappd = False
+            else:
+                untappd = True
+        except:
             untappd = False
-        else:
-            untappd = True
         ratings = BeerRating.objects.filter(user_id=request.user.id)
         return render(request, 'beers.html', {'setup':setup, 'beers':beers, 'ratings':ratings, 'untappd':untappd})
 
