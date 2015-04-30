@@ -6,7 +6,7 @@ statistics will be generated and shown for the users.
 Features
 =
 - Untappd support
--   Search after beers
+-   Search for beers
 -   Download beer labels
 -   Check in beers
 - Foursquare support
